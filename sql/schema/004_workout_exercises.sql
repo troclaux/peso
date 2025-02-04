@@ -6,8 +6,7 @@ CREATE TABLE workout_exercises (
   exercise_id UUID NOT NULL REFERENCES exercises(id) ON DELETE CASCADE,
   sets INTEGER,
   reps INTEGER,
-  order_number INTEGER,
-  UNIQUE (workout_id, exercise_id)
+  order_number INTEGER
 );
 -- +goose StatementEnd
 
