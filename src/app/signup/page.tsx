@@ -12,8 +12,8 @@ export default function SignUp() {
     email: '',
     password: '',
     confirmPassword: ''
-  })
-  const [error, setError] = useState('')
+  });
+  const [error, setError] = useState('');
 
   // how does handleChange knows which input field is changing
 
@@ -22,8 +22,8 @@ export default function SignUp() {
     // updates the state whenever an input field changes
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
-    })
+      [e.target.name]: e.target.value  // updates the value of the input field that triggered the event
+    });
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -36,14 +36,18 @@ export default function SignUp() {
       return
     }
 
+    const requestBody = {
+      email: formData.email,
+      password: formData.password
+    }
+
+    console.log('Making request with:', requestBody)
+
     try {
       const response = await fetch('/api/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password
-        })
+        body: JSON.stringify(requestBody)
       })
 
       let data;
