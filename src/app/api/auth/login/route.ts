@@ -25,6 +25,7 @@ export async function POST(req: Request) {
   try {
     body = await req.json();
   } catch (error) {
+    console.error("Error parsing request body:", error);
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
@@ -80,7 +81,7 @@ export async function POST(req: Request) {
     await client.query(refreshTokenQuery);
     await client.query("COMMIT");
 
-    // free connection
+    // free database connection
     client.release();
 
     // send tokens in response

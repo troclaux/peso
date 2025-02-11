@@ -52,6 +52,7 @@ export default function SignUp() {
       try {
         data = await response.json();
       } catch (jsonError) {
+        console.error("Error parsing request body:", jsonError);
         throw new Error('Server returned an invalid response. Please try again later.');
       }
 
