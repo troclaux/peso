@@ -15,8 +15,6 @@ export default function SignUp() {
   });
   const [error, setError] = useState('');
 
-  // how does handleChange knows which input field is changing
-
   // React.ChangeEvent<HTMLInputElement> = type for an event triggered by a change in the value of an input element
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // updates the state whenever an input field changes
