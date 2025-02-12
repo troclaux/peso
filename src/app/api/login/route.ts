@@ -81,9 +81,6 @@ export async function POST(req: Request) {
     await client.query(refreshTokenQuery);
     await client.query("COMMIT");
 
-    // free database connection
-    client.release();
-
     // send tokens in response
     const response = NextResponse.json({
       accessToken,
@@ -102,6 +99,8 @@ export async function POST(req: Request) {
       maxAge: 7 * 24 * 60 * 60, // Expires in 7 days
       path: "/", // Cookie is available across the entire site
     });
+
+    console.log('Response:', response);
 
     return response;
 
