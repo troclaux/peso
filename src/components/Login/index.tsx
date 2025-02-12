@@ -8,7 +8,7 @@ interface FormData {
 
 export default function Login() {
 
-  const [accessToken, setAccessToken] = useState<string | null>(null)
+  // const [accessToken, setAccessToken] = useState<string | null>(null)
 
   const [formData, setFormData] = useState<FormData>({
     email: '',
