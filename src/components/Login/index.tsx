@@ -37,7 +37,7 @@ export default function Login() {
     console.log('Making request with:', requestBody)
 
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(requestBody)
