@@ -1,14 +1,25 @@
 'use client'
 import { useState } from 'react'
+import { useAuth } from '@/contexts/AuthContext'
+import { useRouter } from 'next/navigation'
 
 interface FormData {
-  email: string
-  password: string
+  email: string;
+  password: string;
+}
+
+interface LoginResponse {
+  accessToken: string;
+  user: {
+    id: string;
+    email: string;
+    isAdmin: boolean;
+  }
 }
 
 export default function Login() {
-
-  // const [accessToken, setAccessToken] = useState<string | null>(null)
+  const { login } = useAuth();
+  const router = useRouter();
 
   const [formData, setFormData] = useState<FormData>({
     email: '',
@@ -43,24 +54,24 @@ export default function Login() {
         body: JSON.stringify(requestBody)
       })
 
-      let data;
-      try {
-        data = await response.json();
-      } catch (jsonError) {
-        console.error("Error parsing request body:", jsonError);
-        throw new Error('Server returned an invalid response. Please try again later.');
-      }
+      const data: LoginResponse = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Something went wrong');
+        throw new Error('response not ok');
       }
 
-      // alert('User created successfully!')
-      setFormData({ email: '', password: '' })
-    } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message)
-      }
+      // Store access token and user data in AuthContext
+      login(data.accessToken, data.user);
+
+      console.log('Logged in:', data.user);
+
+      // Clear form
+      setFormData({ email: '', password: '' });
+
+      // Redirect to dashboard
+      // router.push('/dashboard');
+    } catch (error: any) {
+      setError(error.message);
     }
   }
 

@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import pool from "@/lib/db";
 import bcrypt from "bcrypt";
 
-const JWT_EXPIRES_IN = "50m";
+const JWT_EXPIRES_IN = "15m";
 const REFRESH_TOKEN_EXPIRES_IN = "7d";
 
 const JWT_SECRET = process.env.JWT_SECRET;

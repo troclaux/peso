@@ -1,5 +1,7 @@
 import Link from "next/link";
 import Login from "@/components/Login";
+import { AuthProvider } from '../contexts/AuthContext';
+import type { AppProps } from 'next/app';
 
 export default function Home() {
   return (
