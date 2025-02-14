@@ -33,7 +33,7 @@ export async function POST(req: Request) {
 
     const { email, password } = body;
 
-    // check if user exists
+    // Check if user exists
     client = await pool.connect();
     const result = await client.query("SELECT * FROM users WHERE email = $1", [email]);
 
@@ -43,20 +43,20 @@ export async function POST(req: Request) {
 
     const user = result.rows[0];
 
-    // compare passwords
+    // Compare passwords
     const passwordMatch = await bcrypt.compare(password, user.hashed_password);
     if (!passwordMatch) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    // generate JWT access token
+    // Generate JWT access token
     const accessToken = jwt.sign(
       { userId: user.id, email: user.email },
       JWT_SECRET,
       { expiresIn: JWT_EXPIRES_IN }
     );
 
-    // generate JWT refresh token
+    // Generate JWT refresh token
     const refreshToken = jwt.sign(
       { userId: user.id },
       REFRESH_TOKEN_SECRET,
@@ -66,7 +66,7 @@ export async function POST(req: Request) {
     const saltRounds = 10;
     const hashedRefreshToken = await bcrypt.hash(refreshToken, saltRounds);
 
-    // store refresh token in database
+    // Store refresh token in the database
     const refreshTokenQuery = {
       text: `
         INSERT INTO refresh_tokens (user_id, token, expires_at)
@@ -76,12 +76,12 @@ export async function POST(req: Request) {
       values: [user.id, hashedRefreshToken]
     };
 
-    // use transaction for atomicity
+    // Use transaction for atomicity
     await client.query("BEGIN");
     await client.query(refreshTokenQuery);
     await client.query("COMMIT");
 
-    // send tokens in response
+    // Send tokens in response
     const response = NextResponse.json({
       accessToken,
       user: {
@@ -94,7 +94,7 @@ export async function POST(req: Request) {
     // Store refresh token in HTTP-only cookie
     response.cookies.set("refreshToken", refreshToken, {
       httpOnly: true, // Prevents JavaScript access (XSS protection)
-      secure: process.env.NODE_ENV === "development",
+      secure: process.env.NODE_ENV === "production", // Only enable in production (when using HTTPS)
       sameSite: "strict", // Prevents CSRF attacks
       maxAge: 7 * 24 * 60 * 60, // Expires in 7 days
       path: "/", // Cookie is available across the entire site

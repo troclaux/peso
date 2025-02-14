@@ -63,7 +63,8 @@ export default function Login() {
       // Store access token and user data in AuthContext
       login(data.accessToken, data.user);
 
-      console.log('Logged in:', data.user);
+      console.log('Logged in user:', data.user);
+      console.log('access token:', data.accessToken);
 
       // Clear form
       setFormData({ email: '', password: '' });
