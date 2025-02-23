@@ -1,11 +1,13 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE TABLE exercises (
-  id UUID PRIMARY KEY,
+  id SERIAL,
   name VARCHAR(255) NOT NULL,
   description TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+  PRIMARY KEY (id)
 );
 -- +goose StatementEnd
 

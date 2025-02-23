@@ -1,13 +1,13 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE TABLE users (
-  id UUID PRIMARY KEY,
-  name TEXT,
-  email TEXT UNIQUE NOT NULL,
-  email_verified TIMESTAMP,
+  id SERIAL,
+  name VARCHAR(255),
+  email VARCHAR(255),
+  "emailVerified" TIMESTAMPTZ,
   image TEXT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+ 
+  PRIMARY KEY (id)
 );
 -- +goose StatementEnd
 

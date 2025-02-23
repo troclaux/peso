@@ -1,9 +1,12 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE TABLE sessions (
-  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-  session_token TEXT PRIMARY KEY,
-  expires TIMESTAMP NOT NULL
+  id SERIAL,
+  "userId" INTEGER NOT NULL,
+  expires TIMESTAMPTZ NOT NULL,
+  "sessionToken" VARCHAR(255) NOT NULL,
+ 
+  PRIMARY KEY (id)
 );
 -- +goose StatementEnd
 

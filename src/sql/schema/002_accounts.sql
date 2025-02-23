@@ -1,18 +1,20 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE TABLE accounts (
-  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-  type TEXT NOT NULL,
-  provider TEXT NOT NULL,
-  provider_account_id TEXT NOT NULL,
+  id SERIAL,
+  "userId" INTEGER NOT NULL,
+  type VARCHAR(255) NOT NULL,
+  provider VARCHAR(255) NOT NULL,
+  "providerAccountId" VARCHAR(255) NOT NULL,
   refresh_token TEXT,
   access_token TEXT,
-  expires_at INT,
-  token_type TEXT,
-  scope TEXT,
+  expires_at BIGINT,
   id_token TEXT,
+  scope TEXT,
   session_state TEXT,
-  PRIMARY KEY (provider, provider_account_id)
+  token_type TEXT,
+ 
+  PRIMARY KEY (id)
 );
 -- +goose StatementEnd
 
