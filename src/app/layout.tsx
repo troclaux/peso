@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Your App",
+  title: "Peso",
   description: "Your app description",
 };
 
@@ -31,7 +31,7 @@ export default async function RootLayout({
       <body className={`${inter.className} ${geistSans.variable} ${geistMono.variable} antialiased`}>
         <SessionProvider session={session}>
           <nav className="bg-gray-800 text-white p-4 flex justify-between">
-            <Link href="/" className="text-lg font-bold hover:underline">Your App</Link>
+            <Link href="/" className="text-lg font-bold hover:underline">Peso</Link>
             <div className="flex gap-4">
               <Link href="/" className="hover:underline">
                 Home
@@ -45,6 +45,11 @@ export default async function RootLayout({
               <Link href="/profile" className="hover:underline">
                 Profile
               </Link>
+              {session ? (
+                <Link href="/api/auth/signout?callbackUrl=/">Logout</Link>
+              ) : (
+                <Link href="/api/auth/signin">Sign in</Link>
+              )}
             </div>
           </nav>
 
