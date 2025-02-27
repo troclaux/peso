@@ -1,9 +1,9 @@
-import NextAuth from "next-auth"
-import Google from "next-auth/providers/google"
-import PostgresAdapter from "@auth/pg-adapter"
-import { Pool } from "pg"
+import NextAuth from "next-auth";
+import Google from "next-auth/providers/google";
+import PostgresAdapter from "@auth/pg-adapter";
+import { Pool } from "pg";
 
-const pool = new Pool({
+export const pool = new Pool({
   host: process.env.DATABASE_HOST,
   user: process.env.DATABASE_USER,
   password: process.env.DATABASE_PASSWORD,
@@ -16,4 +16,4 @@ const pool = new Pool({
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PostgresAdapter(pool),
   providers: [Google],
-})
+});
