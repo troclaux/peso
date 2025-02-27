@@ -1,25 +1,19 @@
 import { NextResponse } from 'next/server';
 import { pool, auth } from '@/auth';
 
-export const DELETE = auth(async function DELETE(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export const DELETE = auth(async function DELETE(req: Request, { params }: { params: { id: string } }) {
   if (!req.auth) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
-    const id = params.id;
+    const { id } = await params;
 
     if (!id) {
       return NextResponse.json({ error: 'Exercise ID is required' }, { status: 400 });
     }
 
-    const result = await pool.query(
-      'DELETE FROM exercises WHERE id = $1 RETURNING *',
-      [id]
-    );
+    const result = await pool.query('DELETE FROM exercises WHERE id = $1 RETURNING *', [id]);
 
     if (result.rowCount === 0) {
       return NextResponse.json({ error: 'Exercise not found' }, { status: 404 });
@@ -32,16 +26,13 @@ export const DELETE = auth(async function DELETE(
   }
 });
 
-export const PUT = auth(async function PUT(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export const PUT = auth(async function PUT(req: Request, { params }: { params: { id: string } }) {
   if (!req.auth) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
-    const id = params.id;
+    const { id } = await params;
     const { name, description } = await req.json();
 
     if (!id || !name) {
@@ -70,7 +61,7 @@ export const GET = auth(async function GET(req: Request, { params }: { params: {
   }
 
   try {
-    const id = params.id;
+    const { id } = await params;
 
     if (!id) {
       return NextResponse.json({ error: 'Exercise ID is required' }, { status: 400 });
