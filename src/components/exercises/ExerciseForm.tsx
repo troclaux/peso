@@ -28,7 +28,6 @@ export function ExerciseForm({ onSuccess, exercise, isEditing = false }: Exercis
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Initialize form with exercise data if in edit mode
   useEffect(() => {
     if (exercise) {
       setName(exercise.name);
@@ -64,13 +63,11 @@ export function ExerciseForm({ onSuccess, exercise, isEditing = false }: Exercis
 
       toast.success(`Exercise ${isEditing ? 'updated' : 'created'} successfully`);
 
-      // Reset form if not editing
       if (!isEditing) {
         setName('');
         setDescription('');
       }
 
-      // Call onSuccess callback if provided
       if (onSuccess) {
         onSuccess();
       }
