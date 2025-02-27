@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,22 +9,48 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 
-interface ExerciseFormProps {
-  onSuccess?: () => void;
+interface Exercise {
+  id: number;
+  name: string;
+  description: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
-export function ExerciseForm({ onSuccess }: ExerciseFormProps) {
+interface ExerciseFormProps {
+  onSuccess?: () => void;
+  exercise?: Exercise;
+  isEditing?: boolean;
+}
+
+export function ExerciseForm({ onSuccess, exercise, isEditing = false }: ExerciseFormProps) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Initialize form with exercise data if in edit mode
+  useEffect(() => {
+    if (exercise) {
+      setName(exercise.name);
+      setDescription(exercise.description || '');
+    }
+  }, [exercise]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     
     try {
-      const response = await fetch('/api/exercises', {
-        method: 'POST',
+      let url = '/api/exercises';
+      let method = 'POST';
+      
+      if (isEditing && exercise) {
+        url = `/api/exercises/${exercise.id}`;
+        method = 'PUT';
+      }
+      
+      const response = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -33,13 +59,16 @@ export function ExerciseForm({ onSuccess }: ExerciseFormProps) {
       
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to create exercise');
+        throw new Error(error.error || `Failed to ${isEditing ? 'update' : 'create'} exercise`);
       }
       
-      toast.success('Exercise created successfully');
-      // Reset form
-      setName('');
-      setDescription('');
+      toast.success(`Exercise ${isEditing ? 'updated' : 'created'} successfully`);
+      
+      // Reset form if not editing
+      if (!isEditing) {
+        setName('');
+        setDescription('');
+      }
       
       // Call onSuccess callback if provided
       if (onSuccess) {
@@ -55,8 +84,12 @@ export function ExerciseForm({ onSuccess }: ExerciseFormProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Add New Exercise</CardTitle>
-        <CardDescription>Create a new exercise to add to your workouts</CardDescription>
+        <CardTitle>{isEditing ? 'Edit Exercise' : 'Add New Exercise'}</CardTitle>
+        <CardDescription>
+          {isEditing 
+            ? 'Update the details of this exercise' 
+            : 'Create a new exercise to add to your workouts'}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -86,10 +119,10 @@ export function ExerciseForm({ onSuccess }: ExerciseFormProps) {
             {loading ? (
               <>
                 <Loader2 size={16} className="mr-2 animate-spin" />
-                Creating...
+                {isEditing ? 'Updating...' : 'Creating...'}
               </>
             ) : (
-              'Create Exercise'
+              isEditing ? 'Update Exercise' : 'Create Exercise'
             )}
           </Button>
         </form>
