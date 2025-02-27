@@ -64,10 +64,7 @@ export const PUT = auth(async function PUT(
   }
 });
 
-export const GET = auth(async function GET(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export const GET = auth(async function GET(req: Request, { params }: { params: { id: string } }) {
   if (!req.auth) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -80,7 +77,7 @@ export const GET = auth(async function GET(
     }
 
     const result = await pool.query('SELECT * FROM exercises WHERE id = $1', [id]);
-    
+
     if (result.rowCount === 0) {
       return NextResponse.json({ error: 'Exercise not found' }, { status: 404 });
     }

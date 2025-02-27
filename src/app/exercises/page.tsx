@@ -23,17 +23,14 @@ const ExercisesPage = () => {
   const [currentExercise, setCurrentExercise] = useState<Exercise | undefined>(undefined);
   const [isEditing, setIsEditing] = useState(false);
 
-  // Protect route - redirect to login if not authenticated
   if (!session) {
     redirect("/api/auth/signin?callbackUrl=/exercises");
   }
 
   const handleFormSuccess = () => {
-    // Hide form after successful submission
     setShowForm(false);
     setIsEditing(false);
     setCurrentExercise(undefined);
-    // Trigger refresh of exercise list
     setRefreshTrigger(prev => prev + 1);
   };
 

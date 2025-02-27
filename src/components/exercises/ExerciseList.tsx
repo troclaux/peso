@@ -32,8 +32,12 @@ export function ExerciseList({ refreshTrigger = 0, onEdit }: ExerciseListProps) 
         }
         const data = await response.json();
         setExercises(data);
-      } catch (error: any) {
-        toast.error(error.message);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          toast.error(error.message);
+        } else {
+          toast.error('An unknown error occurred');
+        }
       } finally {
         setLoading(false);
       }
@@ -55,8 +59,12 @@ export function ExerciseList({ refreshTrigger = 0, onEdit }: ExerciseListProps) 
 
       setExercises(exercises.filter(exercise => exercise.id !== id));
       toast.success('Exercise deleted successfully');
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error('An unknown error occurred');
+      }
     }
   };
 

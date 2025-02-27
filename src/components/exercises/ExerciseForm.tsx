@@ -39,16 +39,16 @@ export function ExerciseForm({ onSuccess, exercise, isEditing = false }: Exercis
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
       let url = '/api/exercises';
       let method = 'POST';
-      
+
       if (isEditing && exercise) {
         url = `/api/exercises/${exercise.id}`;
         method = 'PUT';
       }
-      
+
       const response = await fetch(url, {
         method,
         headers: {
@@ -56,26 +56,30 @@ export function ExerciseForm({ onSuccess, exercise, isEditing = false }: Exercis
         },
         body: JSON.stringify({ name, description }),
       });
-      
+
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.error || `Failed to ${isEditing ? 'update' : 'create'} exercise`);
       }
-      
+
       toast.success(`Exercise ${isEditing ? 'updated' : 'created'} successfully`);
-      
+
       // Reset form if not editing
       if (!isEditing) {
         setName('');
         setDescription('');
       }
-      
+
       // Call onSuccess callback if provided
       if (onSuccess) {
         onSuccess();
       }
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error('An unknown error occurred');
+      }
     } finally {
       setLoading(false);
     }
@@ -86,8 +90,8 @@ export function ExerciseForm({ onSuccess, exercise, isEditing = false }: Exercis
       <CardHeader>
         <CardTitle>{isEditing ? 'Edit Exercise' : 'Add New Exercise'}</CardTitle>
         <CardDescription>
-          {isEditing 
-            ? 'Update the details of this exercise' 
+          {isEditing
+            ? 'Update the details of this exercise'
             : 'Create a new exercise to add to your workouts'}
         </CardDescription>
       </CardHeader>
@@ -103,7 +107,7 @@ export function ExerciseForm({ onSuccess, exercise, isEditing = false }: Exercis
               required
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="description">Description (Optional)</Label>
             <Textarea
@@ -114,7 +118,7 @@ export function ExerciseForm({ onSuccess, exercise, isEditing = false }: Exercis
               rows={4}
             />
           </div>
-          
+
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? (
               <>
