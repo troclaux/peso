@@ -1,5 +1,4 @@
 'use client'
-
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
@@ -15,7 +14,6 @@ interface NavLinkProps {
 function NavLink({ href, children, className }: NavLinkProps) {
   const pathname = usePathname()
   const isActive = pathname === href
-
   return (
     <Link
       href={href}
@@ -37,7 +35,7 @@ interface NavbarProps {
 export function Navbar({ session }: NavbarProps) {
   return (
     <header className="bg-background border-b sticky top-0 z-40">
-      <div className="container flex h-14 items-center">
+      <div className="container flex h-14 items-center justify-between">
         <div className="flex items-center space-x-4">
           <Link
             href="/"
@@ -47,13 +45,12 @@ export function Navbar({ session }: NavbarProps) {
           </Link>
           <nav className="hidden md:flex items-center space-x-2">
             <NavLink href="/">Home</NavLink>
-            <NavLink href="/dashboard">Dashboard</NavLink>
             <NavLink href="/workouts">Workouts</NavLink>
             <NavLink href="/exercises">Exercises</NavLink>
             <NavLink href="/profile">Profile</NavLink>
           </nav>
         </div>
-        <div className="ml-auto flex items-center space-x-2">
+        <div className="flex items-center pr-2">
           {session ? (
             <Button variant="outline" size="sm" asChild>
               <Link href="/api/auth/signout?callbackUrl=/">Logout</Link>

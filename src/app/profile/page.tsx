@@ -6,7 +6,7 @@ const Profile = () => {
   const { data: session } = useSession()
 
   if (!session) {
-    redirect("/api/auth/signin?callbackUrl=/Member");
+    redirect("/api/auth/signin?callbackUrl=/profile");
   }
 
   return (
