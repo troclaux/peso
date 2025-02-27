@@ -43,3 +43,21 @@ export const POST = auth(async function POST(req: Request) {
     return NextResponse.json({ error: 'Failed to create workout' }, { status: 500 });
   }
 });
+
+export const GET = auth(async function GET(req) {
+  if (!req.auth) {
+    return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
+  }
+
+  try {
+    const result = await pool.query(
+      'SELECT * FROM workouts WHERE user_id = $1 ORDER BY created_at DESC',
+      [req.auth.userId]
+    );
+
+    return NextResponse.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching workouts:', error);
+    return NextResponse.json({ error: 'Failed to fetch workouts' }, { status: 500 });
+  }
+});
