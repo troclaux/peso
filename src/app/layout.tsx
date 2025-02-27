@@ -1,7 +1,8 @@
 import { SessionProvider } from "next-auth/react";
 import { Inter, Geist, Geist_Mono } from "next/font/google";
 import { auth } from "@/auth";
-import Link from "next/link";
+import { Navbar } from "@/components/ui/navbar";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -16,7 +17,7 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   title: "Peso",
-  description: "Your app description",
+  description: "Track your workout routines and progress",
 };
 
 export default async function RootLayout({
@@ -28,32 +29,14 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className={`${inter.className} ${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${inter.className} ${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background text-foreground`}>
         <SessionProvider session={session}>
-          <nav className="bg-gray-800 text-white p-4 flex justify-between">
-            <Link href="/" className="text-lg font-bold hover:underline">Peso</Link>
-            <div className="flex gap-4">
-              <Link href="/" className="hover:underline">
-                Home
-              </Link>
-              <Link href="/dashboard" className="hover:underline">
-                Dashboard
-              </Link>
-              <Link href="/workouts" className="hover:underline">
-                Workouts
-              </Link>
-              <Link href="/profile" className="hover:underline">
-                Profile
-              </Link>
-              {session ? (
-                <Link href="/api/auth/signout?callbackUrl=/">Logout</Link>
-              ) : (
-                <Link href="/api/auth/signin">Sign in</Link>
-              )}
-            </div>
-          </nav>
+          <Navbar session={session} />
+          <Toaster position="top-right" />
 
-          <main className="p-4">{children}</main>
+          <main className="container mx-auto py-6">
+            {children}
+          </main>
         </SessionProvider>
       </body>
     </html>
