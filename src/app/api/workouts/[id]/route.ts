@@ -96,3 +96,33 @@ export const PUT = auth(async function PUT(req: Request, { params }: { params: {
     return NextResponse.json({ error: 'Failed to update workout' }, { status: 500 });
   }
 });
+
+export const DELETE = auth(async function DELETE(req: Request, { params }: { params: { id: string } }) {
+  if (!req.auth) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    const { id } = await params;
+
+    if (!id) {
+      return NextResponse.json({ error: 'Workout ID is required' }, { status: 400 });
+    }
+
+    const checkResult = await pool.query(
+      'SELECT * FROM workouts WHERE id = $1 AND user_id = $2',
+      [id, req.auth.userId]
+    );
+
+    if (checkResult.rowCount === 0) {
+      return NextResponse.json({ error: 'Workout not found' }, { status: 404 });
+    }
+
+    await pool.query('DELETE FROM workouts WHERE id = $1', [id]);
+
+    return NextResponse.json({ message: 'Workout deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting workout:', error);
+    return NextResponse.json({ error: 'Failed to delete workout' }, { status: 500 });
+  }
+});
