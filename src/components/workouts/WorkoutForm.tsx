@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Loader2, Search, Plus, X, ArrowUp, ArrowDown } from 'lucide-react';
+import { Loader2, Plus, X, ArrowUp, ArrowDown } from 'lucide-react';
 import { Exercise, Workout, WorkoutExercise } from '@/types/workout';
 import {
   // Command,

@@ -113,7 +113,7 @@ export function WorkoutList({ onEditWorkout }: WorkoutListProps) {
           <Card>
             <CardContent className="pt-6">
               <p className="text-center text-muted-foreground">
-                You haven't created any workouts yet.
+                You haven&apos;t created any workouts yet.
               </p>
               <div className="mt-4 flex justify-center">
                 <Link href="/workouts/new">
@@ -186,7 +186,7 @@ export function WorkoutList({ onEditWorkout }: WorkoutListProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete the workout "{workoutToDelete?.title}".
+              This will permanently delete the workout.
               This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
