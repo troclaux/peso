@@ -24,12 +24,25 @@
 
 ### to do
 
-- [ ] implement dockerfile to build project
-- [ ] workflow to build and push docker image to dockerhub
-- [ ] workflow to deploy server in ec2
-- [ ] setup terraform for aws
-  - [ ] terraform to create ec2 instance and rds database
-  - [ ] apply terraform
+- [x] setup terraform for aws
+  - [x] create
+    - [x] ec2 instance
+    - [x] vpc
+    - [x] security group
+    - [x] rds database
+    - [x] ecr
+    - [x] policies
+  - [x] remove hardcoded db credentials (use ssm parameter store)
+    - [x] add rds credentials to .env
+  - [x] terraform plan and apply
+- [ ] implement database schema on rds
+  - [ ] get .pem to access ec2
+  - [ ] connect to rds from ec2
+  - [ ] run goose migrations
+- [ ] dockerfile to build and run application
+- [ ] github actions workflow to build and run application
+  - [ ] workflow to build and push docker image to aws ecr
+  - [ ] workflow to deploy server in ec2
 - [ ] add tests
 - [ ] workflow to run tests
 - [ ] add ci/cd badge
@@ -69,3 +82,6 @@
   - [x] workout list
   - [x] form to create and edit workout
 - [x] workout page
+- [x] dockerfile to run application
+- [x] workflow to build and push docker image to aws ecr
+
