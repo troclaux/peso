@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { pool, auth } from '@/auth';
 
-export const GET = auth(async function GET(req: Request, { params }: { params: { id: string } }) {
+export const GET = auth(async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!req.auth) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -43,7 +43,7 @@ export const GET = auth(async function GET(req: Request, { params }: { params: {
   }
 });
 
-export const PUT = auth(async function PUT(req: Request, { params }: { params: { id: string } }) {
+export const PUT = auth(async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!req.auth) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -97,7 +97,7 @@ export const PUT = auth(async function PUT(req: Request, { params }: { params: {
   }
 });
 
-export const DELETE = auth(async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export const DELETE = auth(async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!req.auth) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
