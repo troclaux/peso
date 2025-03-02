@@ -5,6 +5,7 @@ provider "aws" {
 variable "DATABASE_NAME" {}
 variable "DATABASE_USER" {}
 variable "DATABASE_PASSWORD" {}
+variable "DATABASE_HOST" {}
 
 data "aws_ami" "amazon_linux" {
   most_recent = true
@@ -18,6 +19,8 @@ data "aws_ami" "amazon_linux" {
 
 resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16"
+  enable_dns_support = true
+  enable_dns_hostnames = true
 }
 
 resource "aws_subnet" "main" {
@@ -107,19 +110,19 @@ resource "aws_instance" "app_instance" {
 }
 
 resource "aws_db_instance" "postgres_db" {
-  allocated_storage         = 20
-  storage_type              = "gp2"
-  engine                    = "postgres"
-  engine_version            = "14.17"
-  instance_class            = "db.t3.micro"
-  db_name                   = var.DATABASE_NAME
-  username                  = var.DATABASE_USER
-  password                  = var.DATABASE_PASSWORD
-  db_subnet_group_name      = aws_db_subnet_group.main.name
-  vpc_security_group_ids    = [aws_security_group.rds_sg.id]
-  multi_az                  = false
-  publicly_accessible       = false
-  skip_final_snapshot       = true
+  allocated_storage           = 20
+  storage_type                = "gp2"
+  engine                      = "postgres"
+  engine_version              = "14.17"
+  instance_class              = "db.t3.micro"
+  db_name                     = var.DATABASE_NAME
+  username                    = var.DATABASE_USER
+  password                    = var.DATABASE_PASSWORD
+  db_subnet_group_name        = aws_db_subnet_group.main.name
+  vpc_security_group_ids      = [aws_security_group.rds_sg.id]
+  multi_az                    = false
+  publicly_accessible         = true
+  skip_final_snapshot         = true
   # apply_immediately         = true
   # final_snapshot_identifier = null
 
@@ -147,6 +150,11 @@ resource "aws_route_table" "public_rt" {
 
 resource "aws_route_table_association" "public_association" {
   subnet_id      = aws_subnet.main.id
+  route_table_id = aws_route_table.public_rt.id
+}
+
+resource "aws_route_table_association" "public_association_az2" {
+  subnet_id      = aws_subnet.subnet_az2.id
   route_table_id = aws_route_table.public_rt.id
 }
 
