@@ -6,6 +6,7 @@ terraform.tfstate
 terraform.tfstate.backup
 *.tfvars
 *.tfvars.json
+tfplan
 
 # dependencies
 /node_modules
