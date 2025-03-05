@@ -63,7 +63,6 @@ jobs:
     needs: docker-build-and-push
     outputs:
       ec2_ip: ${{ steps.get_ip.outputs.ec2_ip }}
-
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -86,38 +85,41 @@ jobs:
           REGISTRY: ${{ needs.docker-build-and-push.outputs.REGISTRY }}
           EC2_IP: ${{ steps.get_ip.outputs.ec2_ip }}
         run: |
+          PASSWORD=$(aws ecr get-login-password --region sa-east-1)
+
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-          # add domain replacement for ingress.yaml after registering in route 53
-
           scp -r k8s ec2-user@${{ secrets.EC2_HOST }}:~/
 
+          # SSH into EC2 and deploy
           ssh ec2-user@${{ secrets.EC2_HOST }} << EOF
             set -e
 
-            aws ecr get-login-password --region sa-east-1 | docker login --username AWS --password-stdin ${REGISTRY}
-
+            # Create database secret
             kubectl create secret generic db-secret --from-literal=DATABASE_URL='${{ secrets.DATABASE_URL }}' --dry-run=client -o yaml | kubectl apply -f -
 
+            # Create ECR secret using the password from the runner
             kubectl create secret docker-registry ecr-secret \
               --docker-server=${REGISTRY} \
               --docker-username=AWS \
-              --docker-password=\$(aws ecr get-login-password --region sa-east-1) \
+              --docker-password="$PASSWORD" \
               --dry-run=client -o yaml | kubectl apply -f -
 
+            # Set environment variables for manifests
             export IMAGE=${REGISTRY}/peso-repo:latest
             export NGINX_IMAGE=${REGISTRY}/peso-repo:nginx
 
+            # Apply Kubernetes manifests
             cd ~/k8s
             envsubst < deployment.yaml | kubectl apply -f -
             kubectl apply -f service.yaml
             kubectl apply -f ingress.yaml
 
+            # Verify deployment
             kubectl get pods
             kubectl get svc
             kubectl get ingress
           EOF
-
