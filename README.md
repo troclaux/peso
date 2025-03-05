@@ -24,28 +24,25 @@
 
 ### to do
 
-- [x] setup terraform for aws
-  - [x] create
-    - [x] ec2 instance
-    - [x] vpc
-    - [x] security group
-    - [x] rds database
-    - [x] ecr
-    - [x] policies
-  - [x] remove hardcoded db credentials (use ssm parameter store)
-    - [x] add rds credentials to .env
-  - [x] terraform plan and apply
-- [ ] implement database schema on rds
-  - [ ] get .pem to access ec2
-  - [ ] connect to rds from ec2
-  - [ ] run goose migrations
-- [ ] dockerfile to build and run application
-- [ ] github actions workflow to build and run application
-  - [ ] workflow to build and push docker image to aws ecr
-  - [ ] workflow to deploy server in ec2
+- [x] implement Dockerfile to run the application and nginx
+- [ ] push ci/cd workflow
+  - [x] ssh into ec2
+  - [x] pull docker image from ecr
+  - [x] setup kubernetes to run nginx and next app
+    - sets up next.js app using ecr image
+    - sets up nginx as reverse proxy the next.js servers
+- [ ] install k3s and kubectl on ec2
 - [ ] add tests
 - [ ] workflow to run tests
 - [ ] add ci/cd badge
+
+- how do i configure nginx?
+  - use docker container for it
+  - do i change my current image (node.js official)?
+- how do i setup dns?
+- how do i setup dns in docker container?
+  - do i need to expose a port besides 3000 (next.js)?
+- do i setup kubernetes with nginx as reverse proxy or do i just push to something simpler
 
 ### done
 
@@ -84,4 +81,31 @@
 - [x] workout page
 - [x] dockerfile to run application
 - [x] workflow to build and push docker image to aws ecr
+- [x] define env vars to create infrastructure
+- [x] setup terraform file for aws IaC
+  - [x] create
+    - [x] ec2 instance (don't forget to create it with a key-pair)
+      - [x] install docker and kubernetes
+    - [x] vpc
+    - [x] security groups
+    - [x] rds database
+    - [x] ecr
+    - [x] policies
+  - [x] terraform plan and apply
+- [x] implement dockerfile to build and run application
+- [x] implement github actions workflow to build and push docker image to ecr
+  - [x] workflow to build and push docker image to aws ecr
+  - [x] workflow to deploy server in ec2
+- [x] implement database schema on rds
+  - [x] get access ec2
+  - [x] configure ec2
+    - [x] install postgres client on ec2: `sudo yum install postgresql -y`
+    - [x] install docker on ec2: `sudo yum update -y && sudo yum -y install docker`
+    - [x] start docker service on ec2: `sudo service docker start`
+    - [x] access rds database: `psql -h host_url.region.rds.amazonaws.com -U myuser -d db_name -p db_port` (creates database if it doesn't exist)
+  - [x] apply schema in rds with goose using .env vars
+  - [x] run database migrations
+- [x] implement `nginx.conf` with the following requirements:
+  - reverse proxy for next.js full-stack dynamic web app that connects to an rds postgresql database
+  - update domain's DNS record to point to ip address where app is hosted (ec2's docker container)
 
