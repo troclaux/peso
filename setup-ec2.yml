@@ -1,85 +1,67 @@
 ---
-- name: Configure EC2 with Docker & Kubernetes
+- name: configure EC2 with docker and kubernetes
   hosts: all
   become: yes
   tasks:
 
-    - name: Update the system
+    - name: update the system
       yum:
         name: '*'
         state: latest
 
-    - name: Install PostgreSQL client
-      yum:
-        name: postgresql
-        state: present
-
-    - name: Install Docker
+    - name: install docker
       yum:
         name: docker
         state: present
 
-    - name: Start and enable Docker service
+    - name: start and enable docker service
       systemd:
         name: docker
         state: started
         enabled: yes
 
-    - name: Add EC2 user to Docker group
+    - name: add EC2 user to docker group
       user:
         name: ec2-user
         groups: docker
         append: yes
 
-    - name: Install Git
-      yum:
-        name: git
-        state: present
-
-    - name: Install Node.js and npm
-      shell: |
-        curl -fsSL https://rpm.nodesource.com/setup_18.x | bash -
-        yum install -y nodejs
-
-    - name: Install k3s dependencies
+    - name: install k3s dependencies
       yum:
         name:
           - curl
-          - jq
-          - unzip
           - gettext
         state: present
-        
-    - name: Install AWS CLI
+
+    - name: install AWS CLI
       shell: |
         curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
         unzip awscliv2.zip
         ./aws/install
       args:
         creates: /usr/local/bin/aws
-        
-    - name: Install k3s
+
+    - name: install k3s
       shell: |
         curl -sfL https://get.k3s.io | sh -
       args:
         creates: /usr/local/bin/k3s
-        
-    - name: Allow ec2-user to use kubectl
+
+    - name: allow ec2-user to use kubectl
       file:
         path: /etc/rancher/k3s/k3s.yaml
         owner: ec2-user
         group: ec2-user
         mode: '0644'
-        
-    - name: Set KUBECONFIG for ec2-user
+
+    - name: set KUBECONFIG for ec2-user
       lineinfile:
         path: /home/ec2-user/.bashrc
         line: 'export KUBECONFIG=/etc/rancher/k3s/k3s.yaml'
         state: present
-        
-    - name: Install Nginx Ingress Controller
-      shell: |
-        kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/cloud/deploy.yaml
-      become_user: ec2-user
-      environment:
-        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+    - name: create kubectl symlink
+      file:
+        src: /usr/local/bin/k3s
+        dest: /usr/local/bin/kubectl
+        state: link
