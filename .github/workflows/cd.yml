@@ -55,7 +55,7 @@ jobs:
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
           docker push $REGISTRY/$REPOSITORY:nginx
 
-          echo "REGISTRY=$REGISTRY" >> $GITHUB_OUTPUT
+          echo "registry=$REGISTRY" >> $GITHUB_OUTPUT
 
   deploy:
     name: Deploy to EC2
@@ -82,7 +82,7 @@ jobs:
 
       - name: Setup SSH and Deploy
         env:
-          REGISTRY: ${{ needs.docker-build-and-push.outputs.REGISTRY }}
+          REGISTRY: ${{ needs.docker-build-and-push.outputs.registry }}
           EC2_IP: ${{ steps.get_ip.outputs.ec2_ip }}
         run: |
           PASSWORD=$(aws ecr get-login-password --region sa-east-1)
@@ -99,7 +99,7 @@ jobs:
             export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
             export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
             export AWS_DEFAULT_REGION=sa-east-1
-            export REGISTRY=${{ needs.docker-build-and-push.outputs.REGISTRY }}
+            export REGISTRY=${{ needs.docker-build-and-push.outputs.registry }}
 
             aws ecr get-login-password --region sa-east-1 | docker login --username AWS --password-stdin \${REGISTRY}
 
