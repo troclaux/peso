@@ -6,6 +6,7 @@ variable "DATABASE_NAME" {}
 variable "DATABASE_USER" {}
 variable "DATABASE_PASSWORD" {}
 variable "DATABASE_HOST" {}
+variable "PUBLIC_IP" {}
 
 data "aws_ami" "amazon_linux" {
   most_recent = true
@@ -60,6 +61,15 @@ resource "aws_security_group" "ec2_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+}
+
+resource "aws_security_group_rule" "rds_ingress_my_ip" {
+  type              = "ingress"
+  from_port         = 5432
+  to_port           = 5432
+  protocol         = "tcp"
+  security_group_id = aws_security_group.rds_sg.id
+  cidr_blocks      = ["${var.PUBLIC_IP}/32"]
 }
 
 resource "aws_security_group" "rds_sg" {
