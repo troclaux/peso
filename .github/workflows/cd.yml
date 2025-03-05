@@ -38,7 +38,8 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build, tag, and push docker image to Amazon ECR
+      - name: Build, tag, and push docker images to Amazon ECR
+        id: docker-push
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: peso-repo
@@ -46,4 +47,77 @@ jobs:
           # IMAGE_TAG: ${{ github.sha }}
         run: |
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+
+          cp nginx.conf nginx/
+
+          docker build -t $REGISTRY/$REPOSITORY:nginx -f nginx/Dockerfile nginx/
+
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          docker push $REGISTRY/$REPOSITORY:nginx
+
+          echo "REGISTRY=$REGISTRY" >> $GITHUB_OUTPUT
+
+  deploy:
+    name: Deploy to EC2
+    runs-on: ubuntu-latest
+    needs: docker-build-and-push
+    outputs:
+      ec2_ip: ${{ steps.get_ip.outputs.ec2_ip }}
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: sa-east-1
+
+      - name: Get EC2 IP address
+        id: get_ip
+        run: |
+          EC2_IP=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=Peso" --query "Reservations[0].Instances[0].PublicIpAddress" --output text)
+          echo "ec2_ip=$EC2_IP" >> $GITHUB_OUTPUT
+
+      - name: Setup SSH and Deploy
+        env:
+          REGISTRY: ${{ needs.docker-build-and-push.outputs.REGISTRY }}
+          EC2_IP: ${{ steps.get_ip.outputs.ec2_ip }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+          # add domain replacement for ingress.yaml after registering in route 53
+
+          scp -r k8s ec2-user@${{ secrets.EC2_HOST }}:~/
+
+          ssh ec2-user@${{ secrets.EC2_HOST }} << EOF
+            set -e
+
+            aws ecr get-login-password --region sa-east-1 | docker login --username AWS --password-stdin ${REGISTRY}
+
+            kubectl create secret generic db-secret --from-literal=DATABASE_URL='${{ secrets.DATABASE_URL }}' --dry-run=client -o yaml | kubectl apply -f -
+
+            kubectl create secret docker-registry ecr-secret \
+              --docker-server=${REGISTRY} \
+              --docker-username=AWS \
+              --docker-password=\$(aws ecr get-login-password --region sa-east-1) \
+              --dry-run=client -o yaml | kubectl apply -f -
+
+            export IMAGE=${REGISTRY}/peso-repo:latest
+            export NGINX_IMAGE=${REGISTRY}/peso-repo:nginx
+
+            cd ~/k8s
+            envsubst < deployment.yaml | kubectl apply -f -
+            kubectl apply -f service.yaml
+            kubectl apply -f ingress.yaml
+
+            kubectl get pods
+            kubectl get svc
+            kubectl get ingress
+          EOF
+
