@@ -94,31 +94,30 @@ jobs:
 
           scp -r k8s ec2-user@${{ secrets.EC2_HOST }}:~/
 
-          # SSH into EC2 and deploy
-          ssh ec2-user@${{ secrets.EC2_HOST }} << EOF
+          ssh ec2-user@${{ secrets.EC2_HOST }} << 'EOF'
             set -e
+            export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+            export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            export AWS_DEFAULT_REGION=sa-east-1
 
-            # Create database secret
+            aws ecr get-login-password --region sa-east-1 | docker login --username AWS --password-stdin ${REGISTRY}
+
             kubectl create secret generic db-secret --from-literal=DATABASE_URL='${{ secrets.DATABASE_URL }}' --dry-run=client -o yaml | kubectl apply -f -
 
-            # Create ECR secret using the password from the runner
             kubectl create secret docker-registry ecr-secret \
               --docker-server=${REGISTRY} \
               --docker-username=AWS \
-              --docker-password="$PASSWORD" \
+              --docker-password=$(aws ecr get-login-password --region sa-east-1) \
               --dry-run=client -o yaml | kubectl apply -f -
 
-            # Set environment variables for manifests
             export IMAGE=${REGISTRY}/peso-repo:latest
             export NGINX_IMAGE=${REGISTRY}/peso-repo:nginx
 
-            # Apply Kubernetes manifests
             cd ~/k8s
             envsubst < deployment.yaml | kubectl apply -f -
             kubectl apply -f service.yaml
             kubectl apply -f ingress.yaml
 
-            # Verify deployment
             kubectl get pods
             kubectl get svc
             kubectl get ingress
