@@ -19,8 +19,8 @@ data "aws_ami" "amazon_linux" {
 }
 
 resource "aws_vpc" "main" {
-  cidr_block = "10.0.0.0/16"
-  enable_dns_support = true
+  cidr_block           = "10.0.0.0/16"
+  enable_dns_support   = true
   enable_dns_hostnames = true
 }
 
@@ -67,9 +67,9 @@ resource "aws_security_group_rule" "rds_ingress_my_ip" {
   type              = "ingress"
   from_port         = 5432
   to_port           = 5432
-  protocol         = "tcp"
+  protocol          = "tcp"
   security_group_id = aws_security_group.rds_sg.id
-  cidr_blocks      = ["${var.PUBLIC_IP}/32"]
+  cidr_blocks       = ["${var.PUBLIC_IP}/32"]
 }
 
 resource "aws_security_group" "rds_sg" {
@@ -108,12 +108,12 @@ resource "aws_ecr_repository" "peso_repo" {
 }
 
 resource "aws_instance" "app_instance" {
-  ami                    = data.aws_ami.amazon_linux.id
-  instance_type          = "t2.micro"
-  subnet_id              = aws_subnet.main.id
-  vpc_security_group_ids = [aws_security_group.ec2_sg.id]
+  ami                         = data.aws_ami.amazon_linux.id
+  instance_type               = "t2.micro"
+  subnet_id                   = aws_subnet.main.id
+  vpc_security_group_ids      = [aws_security_group.ec2_sg.id]
   associate_public_ip_address = true
-  key_name               = "my-key-pair"
+  key_name                    = "my-key-pair"
 
   tags = {
     Name = "Peso"
@@ -121,19 +121,19 @@ resource "aws_instance" "app_instance" {
 }
 
 resource "aws_db_instance" "postgres_db" {
-  allocated_storage           = 20
-  storage_type                = "gp2"
-  engine                      = "postgres"
-  engine_version              = "14.17"
-  instance_class              = "db.t3.micro"
-  db_name                     = var.DATABASE_NAME
-  username                    = var.DATABASE_USER
-  password                    = var.DATABASE_PASSWORD
-  db_subnet_group_name        = aws_db_subnet_group.main.name
-  vpc_security_group_ids      = [aws_security_group.rds_sg.id]
-  multi_az                    = false
-  publicly_accessible         = true
-  skip_final_snapshot         = true
+  allocated_storage      = 20
+  storage_type           = "gp2"
+  engine                 = "postgres"
+  engine_version         = "14.17"
+  instance_class         = "db.t3.micro"
+  db_name                = var.DATABASE_NAME
+  username               = var.DATABASE_USER
+  password               = var.DATABASE_PASSWORD
+  db_subnet_group_name   = aws_db_subnet_group.main.name
+  vpc_security_group_ids = [aws_security_group.rds_sg.id]
+  multi_az               = false
+  publicly_accessible    = true
+  skip_final_snapshot    = true
   # apply_immediately         = true
   # final_snapshot_identifier = null
 
