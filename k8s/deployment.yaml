@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nextjs-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nextjs-app
+  template:
+    metadata:
+      labels:
+        app: nextjs-app
+    spec:
+      containers:
+      - name: nextjs
+        image: ${IMAGE}
+        ports:
+        - containerPort: 3000
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: DATABASE_URL
+      imagePullSecrets:
+      - name: ecr-secret
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-proxy
+  template:
+    metadata:
+      labels:
+        app: nginx-proxy
+    spec:
+      containers:
+      - name: nginx
+        image: ${NGINX_IMAGE}
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+      - name: ecr-secret
