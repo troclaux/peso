@@ -24,6 +24,11 @@
 
 ### to do
 
+- [ ] add environment variables to aws secrets manager
+- [ ] allow ec2 to access aws secrets manager
+- [ ] use secret to define endpoint for rds
+- [ ] make nginx + next.js deployment work locally
+- [ ] make nginx + next.js deployment work in the cloud
 - [x] implement Dockerfile to run the application and nginx
 - [ ] push ci/cd workflow
   - [x] ssh into ec2
@@ -35,14 +40,6 @@
 - [ ] add tests
 - [ ] workflow to run tests
 - [ ] add ci/cd badge
-
-- how do i configure nginx?
-  - use docker container for it
-  - do i change my current image (node.js official)?
-- how do i setup dns?
-- how do i setup dns in docker container?
-  - do i need to expose a port besides 3000 (next.js)?
-- do i setup kubernetes with nginx as reverse proxy or do i just push to something simpler
 
 ### done
 
@@ -109,3 +106,70 @@
   - reverse proxy for next.js full-stack dynamic web app that connects to an rds postgresql database
   - update domain's DNS record to point to ip address where app is hosted (ec2's docker container)
 
+## questions
+
+### unresolved
+
+- after pushing docker image to ecr, how does ec2 pull it?
+- how should i add my .env to aws secrets manager?
+- how do i setup dns?
+- how do i create a domain for my website?
+
+### solved
+
+- how do i block a page from unauthorized users in next.js?
+  - if you're using auth.js for authentication:
+    - front-end: `useSession()`, `if (!session) { redirect("/api/auth/signin?callbackUrl=/exercises"); }`
+    - back-end: wrap api function for a specific http verb (e.g. `PUT`, `GET`, etc) with `auth()`
+      - e.g. `export const POST = auth(async function POST(req: Request)`
+- should i use k3s on ec2 or eks?
+  - eks is simpler, but i will do it in ec2 to learn how to setup kubernetes in a fresh linux machine
+- what is the directory structure for components?
+  - everything is explained in [next.js docs](https://nextjs.org/docs)
+- how do i setup terraform for aws?
+  - how do i add my credentials?
+    - generate aws access keys, source them in `.env` or store them in aws secrets manager
+  - run `terraform init` in project's root directory
+- how do i give access between rds and ec2?
+  - security groups define which traffic is allowed between aws resources
+  - ec2 will also need credentials (connection string) to make requests to rds
+- how much should i know about policies?
+  - basic structure of the configuration file
+  - ID
+  - statements
+  - effect
+  - actions
+  - conditions
+- how do i configure nginx?
+  - implement basic nginx.conf and a Dockerfile that will run nginx
+  - do i change my current image (node.js official)?
+    - yes, use one image to run next.js and another to run nginx
+- how do i start nginx inside ec2's docker container? kubernetes deployment
+- how do i run migrations in rds?
+  - add your computer to the ingress rules
+  - connect to postgresql database using `psql` with credentials
+  - migrate with goose
+- where do i store each credential? (e.g. aws secrets manager, github secrets, my own computer)
+  - aws credentials
+  - database credentials
+  - google auth credentials
+- ec2 setup
+  - don't forget to configure security groups in terraform file
+  - install aws cli, docker, kubernetes and kubectl (maybe use ansible to setup everything)
+- how do i get ssl certificate? use certbot
+- should i scp to copy my .env vars to ec2 instance or use aws secrets manager?
+  - aws secrets manager is safer
+
+## pseudocode for CI/CD pipelines
+
+- workflow to build and push docker image
+  - checkout code
+  - configure aws credentials
+  - login into aws ecr
+  - build and push docker image to ecr
+- workflow to pull from github origin and ecr to deploy application
+  - ssh into ec2
+    - how do i use .pem to ssh into ec2? copy file's content and paste into github's repo secrets
+    - how do i pass .env vars to dockerfile securely? aws secrets manager
+  - pull container images from ecr
+  - run kubernetes with kubernetes files
