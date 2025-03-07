@@ -2,11 +2,34 @@ provider "aws" {
   region = "sa-east-1"
 }
 
+variable "DATABASE_HOST" {}
 variable "DATABASE_NAME" {}
 variable "DATABASE_USER" {}
 variable "DATABASE_PASSWORD" {}
-variable "DATABASE_HOST" {}
 variable "PUBLIC_IP" {}
+variable "AUTH_GOOGLE_ID" {}
+variable "AUTH_GOOGLE_SECRET" {}
+variable "AUTH_SECRET" {}
+variable "AUTH_TRUST_HOST" {}
+
+resource "aws_secretsmanager_secret" "env_secret" {
+  name = "peso-env-secret"
+}
+
+resource "aws_secretsmanager_secret_version" "env_secret_version" {
+  secret_id = aws_secretsmanager_secret.env_secret.id
+  secret_string = jsonencode({
+    DATABASE_HOST      = var.DATABASE_HOST
+    DATABASE_NAME      = var.DATABASE_NAME
+    DATABASE_USER      = var.DATABASE_USER
+    DATABASE_PASSWORD  = var.DATABASE_PASSWORD
+    PUBLIC_IP          = var.PUBLIC_IP
+    AUTH_GOOGLE_ID     = var.AUTH_GOOGLE_ID
+    AUTH_GOOGLE_SECRET = var.AUTH_GOOGLE_SECRET
+    AUTH_SECRET        = var.AUTH_SECRET
+    AUTH_TRUST_HOST    = var.AUTH_TRUST_HOST
+  })
+}
 
 data "aws_ami" "amazon_linux" {
   most_recent = true
