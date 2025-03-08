@@ -31,16 +31,6 @@ resource "aws_secretsmanager_secret_version" "env_secret_version" {
   })
 }
 
-data "aws_ami" "amazon_linux" {
-  most_recent = true
-  owners      = ["amazon"]
-
-  filter {
-    name   = "name"
-    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
-  }
-}
-
 resource "aws_iam_role" "ec2_role" {
   name = "ec2_secrets_manager_role"
 
@@ -173,9 +163,8 @@ resource "aws_ecr_repository" "peso_repo" {
     scan_on_push = true
   }
 }
-
 resource "aws_instance" "app_instance" {
-  ami                         = data.aws_ami.amazon_linux.id
+  ami                         = "ami-04d88e4b4e0a5db46"
   instance_type               = "t2.micro"
   subnet_id                   = aws_subnet.main.id
   vpc_security_group_ids      = [aws_security_group.ec2_sg.id]
