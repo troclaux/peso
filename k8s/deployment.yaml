@@ -17,34 +17,52 @@ spec:
         image: ${IMAGE}
         ports:
         - containerPort: 3000
-        env:
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: db-secret
-              key: DATABASE_URL
-        - name: AUTH_GOOGLE_ID
-          valueFrom:
-            secretKeyRef:
-              name: my-secret
-              key: AUTH_GOOGLE_ID
-        - name: AUTH_GOOGLE_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: my-secret
-              key: AUTH_GOOGLE_SECRET
-        - name: AUTH_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: my-secret
-              key: AUTH_SECRET
-        - name: AUTH_TRUST_HOST
-          valueFrom:
-            secretKeyRef:
-              name: my-secret
-              key: AUTH_TRUST_HOST
-      imagePullSecrets:
-      - name: ecr-secret
+          env:
+            - name: DATABASE_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: peso-secrets
+                  key: DATABASE_HOST
+            - name: DATABASE_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: peso-secrets
+                  key: DATABASE_NAME
+            - name: DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: peso-secrets
+                  key: DATABASE_USER
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: peso-secrets
+                  key: DATABASE_PASSWORD
+            - name: PUBLIC_IP
+              valueFrom:
+                secretKeyRef:
+                  name: peso-secrets
+                  key: PUBLIC_IP
+            - name: AUTH_GOOGLE_ID
+              valueFrom:
+                secretKeyRef:
+                  name: peso-secrets
+                  key: AUTH_GOOGLE_ID
+            - name: AUTH_GOOGLE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: peso-secrets
+                  key: AUTH_GOOGLE_SECRET
+            - name: AUTH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: peso-secrets
+                  key: AUTH_SECRET
+            - name: AUTH_TRUST_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: peso-secrets
+                  key: AUTH_TRUST_HOST
 ---
 apiVersion: apps/v1
 kind: Deployment
