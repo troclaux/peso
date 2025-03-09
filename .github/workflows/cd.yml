@@ -16,9 +16,6 @@ jobs:
       contents: 'read'
       id-token: 'write'
 
-    env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-
     steps:
 
       - name: Check out code
@@ -92,34 +89,72 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-          scp -r k8s ec2-user@${{ secrets.EC2_HOST }}:~/
+          cat > .env << EOF
+          DATABASE_HOST=${{ secrets.DATABASE_HOST }}
+          DATABASE_NAME=${{ secrets.DATABASE_NAME }}
+          DATABASE_USER=${{ secrets.DATABASE_USER }}
+          DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}
+          PUBLIC_IP=${{ secrets.PUBLIC_IP }}
+          AUTH_GOOGLE_ID=${{ secrets.AUTH_GOOGLE_ID }}
+          AUTH_GOOGLE_SECRET=${{ secrets.AUTH_GOOGLE_SECRET }}
+          AUTH_SECRET=${{ secrets.AUTH_SECRET }}
+          AUTH_TRUST_HOST=${{ secrets.AUTH_TRUST_HOST }}
+          EOF
 
-          ssh ec2-user@${{ secrets.EC2_HOST }} << EOF
+          k3s kubectl create secret generic my-secret --from-env-file=.env --dry-run=client -o yaml > secret.yaml
+
+          # Copy Kubernetes files and secrets to EC2
+          scp -r k8s ubuntu@${{ secrets.EC2_HOST }}:~/
+          scp .env ubuntu@${{ secrets.EC2_HOST }}:~/
+          scp secret.yaml ubuntu@${{ secrets.EC2_HOST }}:~/
+
+          # Remove sensitive files locally
+          rm .env secret.yaml
+
+          ssh ubuntu@${{ secrets.EC2_HOST }} << EOF
             set -e
             export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
             export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
             export AWS_DEFAULT_REGION=sa-east-1
             export REGISTRY=${{ needs.docker-build-and-push.outputs.registry }}
 
+            # Login to Amazon ECR from EC2
             aws ecr get-login-password --region sa-east-1 | docker login --username AWS --password-stdin \${REGISTRY}
 
-            kubectl create secret generic db-secret --from-literal=DATABASE_URL='${{ secrets.DATABASE_URL }}' --dry-run=client -o yaml | kubectl apply -f -
+            sudo k3s kubectl apply -f ~/secret.yaml
 
-            kubectl create secret docker-registry ecr-secret \\
+            sudo k3s kubectl create secret generic db-secret \
+              --from-literal=DATABASE_HOST='${{ secrets.DATABASE_HOST }}' \
+              --from-literal=DATABASE_NAME='${{ secrets.DATABASE_NAME }}' \
+              --from-literal=DATABASE_USER='${{ secrets.DATABASE_USER }}' \
+              --from-literal=DATABASE_PASSWORD='${{ secrets.DATABASE_PASSWORD }}' \
+              --from-literal=PUBLIC_IP='${{ secrets.PUBLIC_IP }}' \
+              --from-literal=AUTH_GOOGLE_ID='${{ secrets.AUTH_GOOGLE_ID }}' \
+              --from-literal=AUTH_GOOGLE_SECRET='${{ secrets.AUTH_GOOGLE_SECRET }}' \
+              --from-literal=AUTH_SECRET='${{ secrets.AUTH_SECRET }}' \
+              --from-literal=AUTH_TRUST_HOST='${{ secrets.AUTH_TRUST_HOST }}' \
+              --dry-run=client -o yaml | sudo k3s kubectl apply -f -
+
+            sudo k3s kubectl create secret docker-registry ecr-secret \\
               --docker-server=\${REGISTRY} \\
               --docker-username=AWS \\
               --docker-password=\$(aws ecr get-login-password --region sa-east-1) \\
-              --dry-run=client -o yaml | kubectl apply -f -
+              --dry-run=client -o yaml | sudo k3s kubectl apply -f -
+
+            sudo k3s kubectl create secret generic my-secret --from-env-file=~/.env --dry-run=client -o yaml > ~/k8s/secret.yaml
+            sudo k3s kubectl apply -f ~/k8s/secret.yaml
 
             export IMAGE=\${REGISTRY}/peso-repo:latest
             export NGINX_IMAGE=\${REGISTRY}/peso-repo:nginx
 
             cd ~/k8s
-            envsubst < deployment.yaml | kubectl apply -f -
-            kubectl apply -f service.yaml
-            kubectl apply -f ingress.yaml
+            envsubst < deployment.yaml | sudo k3s kubectl apply -f -
+            sudo k3s kubectl apply -f service.yaml
+            sudo k3s kubectl apply -f ingress.yaml
 
-            kubectl get pods
-            kubectl get svc
-            kubectl get ingress
+            rm -f ~/.env ~/secret.yaml
+
+            sudo k3s kubectl get pods
+            sudo k3s kubectl get svc
+            sudo k3s kubectl get ingress
           EOF

@@ -23,6 +23,26 @@ spec:
             secretKeyRef:
               name: db-secret
               key: DATABASE_URL
+        - name: AUTH_GOOGLE_ID
+          valueFrom:
+            secretKeyRef:
+              name: my-secret
+              key: AUTH_GOOGLE_ID
+        - name: AUTH_GOOGLE_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: my-secret
+              key: AUTH_GOOGLE_SECRET
+        - name: AUTH_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: my-secret
+              key: AUTH_SECRET
+        - name: AUTH_TRUST_HOST
+          valueFrom:
+            secretKeyRef:
+              name: my-secret
+              key: AUTH_TRUST_HOST
       imagePullSecrets:
       - name: ecr-secret
 ---
