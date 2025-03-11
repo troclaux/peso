@@ -20,32 +20,32 @@ spec:
         - containerPort: 3000
         env:
         - name: DATABASE_URL
-          value: "postgres://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):5432/$(DB_NAME)"
-        - name: DB_USER
           valueFrom:
             secretKeyRef:
               name: peso-secrets
-              key: DB_USER
-        - name: DB_PASSWORD
+              key: DATABASE_URL
+        - name: DATABASE_USER
           valueFrom:
             secretKeyRef:
               name: peso-secrets
-              key: DB_PASSWORD
-        - name: DB_HOST
+              key: DATABASE_USER
+        - name: DATABASE_PASSWORD
           valueFrom:
             secretKeyRef:
               name: peso-secrets
-              key: DB_HOST
-        - name: DB_NAME
+              key: DATABASE_PASSWORD
+        - name: DATABASE_HOST
           valueFrom:
             secretKeyRef:
               name: peso-secrets
-              key: DB_NAME
+              key: DATABASE_HOST
+        - name: DATABASE_NAME
+          valueFrom:
+            secretKeyRef:
+              name: peso-secrets
+              key: DATABASE_NAME
         - name: NEXTAUTH_URL
-          valueFrom:
-            secretKeyRef:
-              name: peso-secrets
-              key: NEXTAUTH_URL
+          value: "https://pesodevops.com"
         - name: NEXTAUTH_SECRET
           valueFrom:
             secretKeyRef:
@@ -87,12 +87,28 @@ spec:
       labels:
         app: nginx-proxy
     spec:
+      volumes:
+        - name: certs
+          emptyDir: {}
+
+      initContainers:
+        - name: certbot
+          image: certbot/certbot:latest
+          args: ["certonly", "--standalone", "--agree-tos", "--register-unsafely-without-email", "-d", "pesodevops.com", "-d", "www.pesodevops.com", "--non-interactive"]
+          volumeMounts:
+            - mountPath: "/etc/letsencrypt"
+              name: certs
+
       containers:
       - name: nginx
         image: peso-nginx:latest
         imagePullPolicy: Never
         ports:
         - containerPort: 80
+        - containerPort: 443
+        volumeMounts:
+          - mountPath: "/etc/letsencrypt"
+            name: certs
 
 ---
 apiVersion: v1
@@ -100,11 +116,13 @@ kind: Service
 metadata:
   name: nextjs-service
 spec:
+  type: NodePort
   selector:
     app: nextjs-app
   ports:
   - port: 3000
     targetPort: 3000
+    nodePort: 31234
 
 ---
 apiVersion: v1
@@ -117,4 +135,6 @@ spec:
   ports:
   - port: 80
     targetPort: 80
+  - port: 443
+    targetPort: 443
   type: LoadBalancer
