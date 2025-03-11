@@ -1,8 +1,29 @@
 variable "aws_region" {
   default = "sa-east-1"
 }
+
 provider "aws" {
   region = var.aws_region
+}
+
+variable "domain_name" {
+  default = "pesodevops.com"
+}
+
+resource "aws_route53_zone" "main" {
+  name = var.domain_name
+}
+
+resource "aws_route53_record" "peso_root" {
+  zone_id = aws_route53_zone.main.id
+  name    = var.domain_name
+  type    = "A"
+  records = [aws_eip.peso_eip.public_ip]
+  ttl     = 300
+}
+
+output "peso_k8s_url" {
+  value = "http://${aws_route53_record.peso_root.name}"
 }
 
 data "aws_caller_identity" "current" {}
@@ -136,6 +157,13 @@ resource "aws_security_group" "ec2_sg" {
   ingress {
     from_port   = 22
     to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
