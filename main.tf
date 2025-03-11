@@ -1,6 +1,11 @@
-provider "aws" {
-  region = "sa-east-1"
+variable "aws_region" {
+  default = "sa-east-1"
 }
+provider "aws" {
+  region = var.aws_region
+}
+
+data "aws_caller_identity" "current" {}
 
 variable "DATABASE_HOST" {}
 variable "DATABASE_NAME" {}
@@ -70,8 +75,31 @@ resource "aws_iam_role_policy_attachment" "attach_secrets_policy" {
   policy_arn = aws_iam_policy.secrets_policy.arn
 }
 
-resource "aws_iam_instance_profile" "ec2_instance_profile" {
-  name = "ec2_secrets_profile"
+resource "aws_iam_policy" "rds_access_policy" {
+  name        = "PesoK8sRDSAccess"
+  description = "Policy for Kubernetes pods to access RDS"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "rds-db:connect"
+        ]
+        Resource = "arn:aws:rds-db:${var.aws_region}:${data.aws_caller_identity.current.account_id}:dbuser:${aws_db_instance.postgres_db.resource_id}/${var.DATABASE_USER}"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "attach_rds_policy" {
+  role       = aws_iam_role.ec2_role.name
+  policy_arn = aws_iam_policy.rds_access_policy.arn
+}
+
+resource "aws_iam_instance_profile" "k8s_profile" {
+  name = "k8s_profile"
   role = aws_iam_role.ec2_role.name
 }
 
@@ -120,15 +148,6 @@ resource "aws_security_group" "ec2_sg" {
   }
 }
 
-resource "aws_security_group_rule" "rds_ingress_my_ip" {
-  type              = "ingress"
-  from_port         = 5432
-  to_port           = 5432
-  protocol          = "tcp"
-  security_group_id = aws_security_group.rds_sg.id
-  cidr_blocks       = ["${var.PUBLIC_IP}/32"]
-}
-
 resource "aws_security_group" "rds_sg" {
   name        = "rds_sg"
   description = "Allow inbound traffic for RDS"
@@ -140,6 +159,37 @@ resource "aws_security_group" "rds_sg" {
     protocol    = "tcp"
     cidr_blocks = ["10.0.0.0/16"]
   }
+}
+
+resource "aws_security_group" "k8s_nodes_sg" {
+  name        = "k8s-nodes-sg"
+  description = "Allow Kubernetes Nodes to communicate"
+  vpc_id      = aws_vpc.main.id # Make sure this matches your VPC
+
+  ingress {
+    from_port   = 0
+    to_port     = 65535
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_security_group_rule" "rds_ingress_my_ip" {
+  type              = "ingress"
+  from_port         = 5432
+  to_port           = 5432
+  protocol          = "tcp"
+  security_group_id = aws_security_group.rds_sg.id
+  cidr_blocks       = ["${var.PUBLIC_IP}/32"]
+}
+
+resource "aws_security_group_rule" "rds_ingress_k8s" {
+  type                     = "ingress"
+  from_port                = 5432
+  to_port                  = 5432
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.rds_sg.id
+  source_security_group_id = aws_security_group.k8s_nodes_sg.id
 }
 
 resource "aws_security_group_rule" "rds_ingress_ec2" {
@@ -163,17 +213,17 @@ resource "aws_ecr_repository" "peso_repo" {
     scan_on_push = true
   }
 }
-resource "aws_instance" "app_instance" {
+resource "aws_instance" "peso_instance" {
   ami                         = "ami-04d88e4b4e0a5db46"
   instance_type               = "t2.micro"
   subnet_id                   = aws_subnet.main.id
-  vpc_security_group_ids      = [aws_security_group.ec2_sg.id]
+  vpc_security_group_ids      = [aws_security_group.ec2_sg.id, aws_security_group.k8s_nodes_sg.id]
   associate_public_ip_address = true
   key_name                    = "my-key-pair"
-  iam_instance_profile        = aws_iam_instance_profile.ec2_instance_profile.name
+  iam_instance_profile        = aws_iam_instance_profile.k8s_profile.name
 
   tags = {
-    Name = "Peso"
+    Name = "Peso-K8s-Worker"
   }
 }
 
@@ -187,10 +237,11 @@ resource "aws_db_instance" "postgres_db" {
   username               = var.DATABASE_USER
   password               = var.DATABASE_PASSWORD
   db_subnet_group_name   = aws_db_subnet_group.main.name
-  vpc_security_group_ids = [aws_security_group.rds_sg.id]
+  vpc_security_group_ids = [aws_security_group.rds_sg.id, aws_security_group.k8s_nodes_sg.id]
   multi_az               = false
   publicly_accessible    = true
   skip_final_snapshot    = true
+  depends_on             = [aws_db_subnet_group.main, aws_security_group.rds_sg]
   # apply_immediately         = true
   # final_snapshot_identifier = null
 
@@ -199,8 +250,8 @@ resource "aws_db_instance" "postgres_db" {
   }
 }
 
-resource "aws_eip" "app_eip" {
-  instance = aws_instance.app_instance.id
+resource "aws_eip" "peso_eip" {
+  instance = aws_instance.peso_instance.id
 }
 
 resource "aws_internet_gateway" "gw" {
@@ -227,7 +278,7 @@ resource "aws_route_table_association" "public_association_az2" {
 }
 
 output "ec2_public_ip" {
-  value = aws_instance.app_instance.public_ip
+  value = aws_instance.peso_instance.public_ip
 }
 
 output "rds_endpoint" {
