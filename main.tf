@@ -243,7 +243,7 @@ resource "aws_ecr_repository" "peso_repo" {
 }
 resource "aws_instance" "peso_instance" {
   ami                         = "ami-04d88e4b4e0a5db46"
-  instance_type               = "t2.micro"
+  instance_type               = "t2.small"
   subnet_id                   = aws_subnet.main.id
   vpc_security_group_ids      = [aws_security_group.ec2_sg.id, aws_security_group.k8s_nodes_sg.id]
   associate_public_ip_address = true
