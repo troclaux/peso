@@ -15,7 +15,7 @@ spec:
       containers:
       - name: nextjs
         image: peso-nextjs:latest
-        imagePullPolicy: Never
+        imagePullPolicy: Always
         ports:
         - containerPort: 3000
         env:
@@ -90,7 +90,7 @@ spec:
       containers:
       - name: nginx
         image: peso-nginx:latest
-        imagePullPolicy: Never
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
         - containerPort: 443
