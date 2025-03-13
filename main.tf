@@ -23,7 +23,7 @@ resource "aws_route53_record" "peso_root" {
 }
 
 output "peso_k8s_url" {
-  value = "http://${aws_route53_record.peso_root.name}"
+  value = "https://${aws_route53_record.peso_root.name}"
 }
 
 data "aws_caller_identity" "current" {}
