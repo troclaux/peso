@@ -118,10 +118,12 @@ spec:
   selector:
     app: nginx-proxy
   ports:
-    - protocol: TCP
+    - name: http
+      protocol: TCP
       port: 80
       targetPort: 80
-    - protocol: TCP
+    - name: https
+      protocol: TCP
       port: 443
       targetPort: 443
 
@@ -162,9 +164,9 @@ kind: Ingress
 metadata:
   name: pesodevops-ingress
   annotations:
-    kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: letsencrypt
 spec:
+  ingressClassName: nginx
   tls:
     - hosts:
         - pesodevops.com
