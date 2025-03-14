@@ -10,19 +10,18 @@ on:
 jobs:
 
   docker-build-and-push:
-    name: Build and push Docker Image
+    name: build and push docker images
     runs-on: ubuntu-latest
     permissions:
       contents: 'read'
       id-token: 'write'
+    outputs:
+      registry: ${{ steps.login-ecr.outputs.registry }}
 
     steps:
 
       - name: Check out code
         uses: actions/checkout@v4
-
-      - name: Check for difference between working directory and latest commit
-        run: git diff HEAD
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -35,23 +34,27 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build, tag, and push docker images to Amazon ECR
-        id: docker-push
+      - name: build, tag, and push next.js docker image
+        id: docker-push-nextjs
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: peso-repo
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+          docker build -t $REGISTRY/$REPOSITORY:nextjs-$IMAGE_TAG -t $REGISTRY/$REPOSITORY:nextjs-latest .
+          docker push $REGISTRY/$REPOSITORY:nextjs-$IMAGE_TAG
+          docker push $REGISTRY/$REPOSITORY:nextjs-latest
 
-          cp nginx.conf nginx/
-
-          docker build -t $REGISTRY/$REPOSITORY:nginx -f nginx/Dockerfile nginx/
-
-          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
-          docker push $REGISTRY/$REPOSITORY:nginx
-
-          echo "registry=$REGISTRY" >> $GITHUB_OUTPUT
+      - name: build, tag, and push nginx docker image
+        id: docker-push-nginx
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: peso-repo
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $REGISTRY/$REPOSITORY:nginx-$IMAGE_TAG -t $REGISTRY/$REPOSITORY:nginx-latest -f nginx/Dockerfile nginx/
+          docker push $REGISTRY/$REPOSITORY:nginx-$IMAGE_TAG
+          docker push $REGISTRY/$REPOSITORY:nginx-latest
 
   deploy:
     name: Deploy to EC2
@@ -112,13 +115,10 @@ jobs:
             sudo k3s kubectl create secret generic my-secret --from-env-file=~/.env --dry-run=client -o yaml > ~/k8s/secret.yaml
             sudo k3s kubectl apply -f ~/k8s/secret.yaml
 
-            export IMAGE=\${REGISTRY}/peso-repo:latest
-            export NGINX_IMAGE=\${REGISTRY}/peso-repo:nginx
+            export REGISTRY=\${REGISTRY}
 
             cd ~/k8s
-            envsubst < deployment.yaml | sudo k3s kubectl apply -f -
-            sudo k3s kubectl apply -f service.yaml
-            sudo k3s kubectl apply -f ingress.yaml
+            envsubst < ec2-deployment.yaml | sudo k3s kubectl apply -f -
 
             rm -f ~/.env
 
