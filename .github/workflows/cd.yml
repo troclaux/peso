@@ -52,7 +52,7 @@ jobs:
           REPOSITORY: peso-repo
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t $REGISTRY/$REPOSITORY:nginx-$IMAGE_TAG -t $REGISTRY/$REPOSITORY:nginx-latest -f nginx/Dockerfile nginx/
+          docker build -t $REGISTRY/$REPOSITORY:nginx-$IMAGE_TAG -t $REGISTRY/$REPOSITORY:nginx-latest -f nginx/Dockerfile .
           docker push $REGISTRY/$REPOSITORY:nginx-$IMAGE_TAG
           docker push $REGISTRY/$REPOSITORY:nginx-latest
 
