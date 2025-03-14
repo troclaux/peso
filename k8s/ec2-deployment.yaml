@@ -12,9 +12,11 @@ spec:
       labels:
         app: nextjs-app
     spec:
+      imagePullSecrets:
+      - name: ecr-secret
       containers:
       - name: nextjs
-        image: peso-nextjs:latest
+        image: 072216710152.dkr.ecr.sa-east-1.amazonaws.com/peso-repo:nextjs-be1a33c116ccc92d349da620547998abd658e14e
         imagePullPolicy: Always
         ports:
         - containerPort: 3000
@@ -87,9 +89,11 @@ spec:
       labels:
         app: nginx-proxy
     spec:
+      imagePullSecrets:
+      - name: ecr-secret
       containers:
       - name: nginx
-        image: peso-nginx:latest
+        image: 072216710152.dkr.ecr.sa-east-1.amazonaws.com/peso-repo:nginx-latest
         imagePullPolicy: Always
         ports:
         - containerPort: 80
