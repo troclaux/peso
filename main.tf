@@ -6,6 +6,14 @@ provider "aws" {
   region = var.aws_region
 }
 
+variable "aws_account_id" {
+  default = "072216710152"
+}
+
+variable "ecr_repository" {
+  default = "peso-repo"
+}
+
 variable "domain_name" {
   default = "pesodevops.com"
 }
@@ -265,6 +273,39 @@ resource "aws_ecr_lifecycle_policy" "peso_repo_policy" {
   ]
 }
 EOF
+}
+
+resource "aws_iam_policy" "ecr_pull_policy" {
+  name        = "ECRPullPolicy"
+  description = "Policy to allow EC2 instances to pull images from ECR"
+
+  policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:BatchGetImage",
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:DescribeRepositories"
+      ],
+      "Resource": "arn:aws:ecr:${var.aws_region}:${var.aws_account_id}:repository/${var.ecr_repository}"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "ecr:GetAuthorizationToken",
+      "Resource": "*"
+    }
+  ]
+}
+POLICY
+}
+
+resource "aws_iam_role_policy_attachment" "ecr_pull_attach" {
+  role       = aws_iam_role.ec2_role.name
+  policy_arn = aws_iam_policy.ecr_pull_policy.arn
 }
 
 resource "aws_instance" "peso_instance" {
