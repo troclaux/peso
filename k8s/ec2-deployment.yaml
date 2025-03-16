@@ -46,11 +46,11 @@ spec:
               key: DATABASE_NAME
         - name: NEXTAUTH_URL
           value: "https://pesodevops.com"
-        - name: NEXTAUTH_SECRET
+        - name: AUTH_SECRET
           valueFrom:
             secretKeyRef:
               name: peso-secrets
-              key: NEXTAUTH_SECRET
+              key: AUTH_SECRET
         - name: AUTH_GOOGLE_ID
           valueFrom:
             secretKeyRef:
