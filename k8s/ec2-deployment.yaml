@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: nextjs
-        image: 072216710152.dkr.ecr.sa-east-1.amazonaws.com/peso-repo:nextjs-be1a33c116ccc92d349da620547998abd658e14e
+        image: 072216710152.dkr.ecr.sa-east-1.amazonaws.com/peso-repo:nextjs-latest
         imagePullPolicy: Always
         ports:
         - containerPort: 3000
