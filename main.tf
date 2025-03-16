@@ -286,6 +286,7 @@ resource "aws_iam_policy" "ecr_pull_policy" {
     {
       "Effect": "Allow",
       "Action": [
+        "ecr:GetAuthorizationToken",
         "ecr:GetDownloadUrlForLayer",
         "ecr:BatchGetImage",
         "ecr:BatchCheckLayerAvailability",
