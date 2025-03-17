@@ -7,6 +7,8 @@ services:
       - .env.local
     environment:
       - NODE_ENV=production
+    expose:
+      - "3000"
 
   nginx:
     image: 072216710152.dkr.ecr.sa-east-1.amazonaws.com/peso-repo:nginx-latest
