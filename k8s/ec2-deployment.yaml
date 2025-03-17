@@ -12,6 +12,8 @@ spec:
       labels:
         app: nextjs-app
     spec:
+      imagePullSecrets:
+      - name: ecr-secret
       containers:
       - name: nextjs
         image: 072216710152.dkr.ecr.sa-east-1.amazonaws.com/peso-repo:nextjs-latest
@@ -87,6 +89,8 @@ spec:
       labels:
         app: nginx-proxy
     spec:
+      imagePullSecrets:
+      - name: ecr-secret
       containers:
       - name: nginx
         image: 072216710152.dkr.ecr.sa-east-1.amazonaws.com/peso-repo:nginx-latest
