@@ -154,7 +154,7 @@ resource "aws_subnet" "subnet_az2" {
 
 resource "aws_security_group" "ec2_sg" {
   name        = "ec2_sg"
-  description = "Allow inbound traffic for EC2 and RDS"
+  description = "Allow inbound traffic for EC2 with Docker Compose"
   vpc_id      = aws_vpc.main.id
 
   ingress {
@@ -162,6 +162,7 @@ resource "aws_security_group" "ec2_sg" {
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+    description = "HTTP"
   }
 
   ingress {
@@ -169,6 +170,7 @@ resource "aws_security_group" "ec2_sg" {
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+    description = "SSH"
   }
 
   ingress {
@@ -176,6 +178,15 @@ resource "aws_security_group" "ec2_sg" {
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+    description = "HTTPS"
+  }
+
+  ingress {
+    from_port   = 3000
+    to_port     = 3000
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/16"]
+    description = "Next.js App (internal access only)"
   }
 
   egress {
@@ -318,8 +329,20 @@ resource "aws_instance" "peso_instance" {
   key_name                    = "my-key-pair"
   iam_instance_profile        = aws_iam_instance_profile.ec2_profile.name
 
+  user_data = <<-EOF
+    #!/bin/bash
+    yum update -y
+    yum install -y docker
+    systemctl start docker
+    systemctl enable docker
+    curl -L "https://github.com/docker/compose/releases/download/v2.20.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    chmod +x /usr/local/bin/docker-compose
+    ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+    usermod -aG docker ec2-user
+  EOF
+
   tags = {
-    Name = "Peso-Docker-Worker"
+    Name = "Peso-Docker-Compose-Instance"
   }
 }
 
