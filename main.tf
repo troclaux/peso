@@ -30,7 +30,7 @@ resource "aws_route53_record" "peso_root" {
   ttl     = 300
 }
 
-output "peso_k8s_url" {
+output "peso_url" {
   value = "https://${aws_route53_record.peso_root.name}"
 }
 
@@ -105,8 +105,8 @@ resource "aws_iam_role_policy_attachment" "attach_secrets_policy" {
 }
 
 resource "aws_iam_policy" "rds_access_policy" {
-  name        = "PesoK8sRDSAccess"
-  description = "Policy for Kubernetes pods to access RDS"
+  name        = "PesoRDSAccess"
+  description = "Policy for EC2 to access RDS"
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -127,8 +127,8 @@ resource "aws_iam_role_policy_attachment" "attach_rds_policy" {
   policy_arn = aws_iam_policy.rds_access_policy.arn
 }
 
-resource "aws_iam_instance_profile" "k8s_profile" {
-  name = "k8s_profile"
+resource "aws_iam_instance_profile" "ec2_profile" {
+  name = "ec2_profile"
   role = aws_iam_role.ec2_role.name
 }
 
@@ -199,10 +199,10 @@ resource "aws_security_group" "rds_sg" {
   }
 }
 
-resource "aws_security_group" "k8s_nodes_sg" {
-  name        = "k8s-nodes-sg"
-  description = "Allow Kubernetes Nodes to communicate"
-  vpc_id      = aws_vpc.main.id # Make sure this matches your VPC
+resource "aws_security_group" "docker_sg" {
+  name        = "docker-sg"
+  description = "Allow Docker containers to communicate"
+  vpc_id      = aws_vpc.main.id
 
   ingress {
     from_port   = 0
@@ -221,13 +221,13 @@ resource "aws_security_group_rule" "rds_ingress_my_ip" {
   cidr_blocks       = ["${var.PUBLIC_IP}/32"]
 }
 
-resource "aws_security_group_rule" "rds_ingress_k8s" {
+resource "aws_security_group_rule" "rds_ingress_docker" {
   type                     = "ingress"
   from_port                = 5432
   to_port                  = 5432
   protocol                 = "tcp"
   security_group_id        = aws_security_group.rds_sg.id
-  source_security_group_id = aws_security_group.k8s_nodes_sg.id
+  source_security_group_id = aws_security_group.docker_sg.id
 }
 
 resource "aws_security_group_rule" "rds_ingress_ec2" {
@@ -292,7 +292,7 @@ resource "aws_iam_policy" "ecr_pull_policy" {
         "ecr:BatchCheckLayerAvailability",
         "ecr:DescribeRepositories"
       ],
-      "Resource": "arn:aws:ecr:${var.aws_region}:${var.aws_account_id}:repository/${var.ecr_repository}"
+      "Resource": "*"
     },
     {
       "Effect": "Allow",
@@ -313,13 +313,13 @@ resource "aws_instance" "peso_instance" {
   ami                         = "ami-04d88e4b4e0a5db46"
   instance_type               = "t3.small"
   subnet_id                   = aws_subnet.main.id
-  vpc_security_group_ids      = [aws_security_group.ec2_sg.id, aws_security_group.k8s_nodes_sg.id]
+  vpc_security_group_ids      = [aws_security_group.ec2_sg.id, aws_security_group.docker_sg.id]
   associate_public_ip_address = true
   key_name                    = "my-key-pair"
-  iam_instance_profile        = aws_iam_instance_profile.k8s_profile.name
+  iam_instance_profile        = aws_iam_instance_profile.ec2_profile.name
 
   tags = {
-    Name = "Peso-K8s-Worker"
+    Name = "Peso-Docker-Worker"
   }
 }
 
@@ -333,7 +333,7 @@ resource "aws_db_instance" "postgres_db" {
   username               = var.DATABASE_USER
   password               = var.DATABASE_PASSWORD
   db_subnet_group_name   = aws_db_subnet_group.main.name
-  vpc_security_group_ids = [aws_security_group.rds_sg.id, aws_security_group.k8s_nodes_sg.id]
+  vpc_security_group_ids = [aws_security_group.rds_sg.id, aws_security_group.docker_sg.id]
   multi_az               = false
   publicly_accessible    = true
   skip_final_snapshot    = true
@@ -384,3 +384,4 @@ output "rds_endpoint" {
 output "ecr_repository_url" {
   value = aws_ecr_repository.peso_repo.repository_url
 }
+

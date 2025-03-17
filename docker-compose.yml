@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  nextjs-service:
+    build: .
+    container_name: nextjs_app
+    restart: always
+    env_file:
+      - .env.local
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - nginx
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx_proxy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - certbot_data:/var/www/certbot
+      - letsencrypt:/etc/letsencrypt
+    depends_on:
+      - nextjs-service
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - certbot_data:/var/www/certbot
+      - letsencrypt:/etc/letsencrypt
+    entrypoint: "/bin/sh -c 'certbot certonly --webroot --webroot-path=/var/www/certbot --email arthur.moreira.1995@hotmail.com --agree-tos --no-eff-email --force-renewal -d pesodevops.com -d www.pesodevops.com'"
+
+volumes:
+  certbot_data:
+  letsencrypt:
