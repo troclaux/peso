@@ -1,19 +1,15 @@
-version: '3.8'
-
 services:
   nextjs-service:
-    build: .
+    image: 072216710152.dkr.ecr.sa-east-1.amazonaws.com/peso-repo:nextjs-latest
     container_name: nextjs_app
     restart: always
     env_file:
       - .env.local
     environment:
       - NODE_ENV=production
-    depends_on:
-      - nginx
 
   nginx:
-    image: nginx:latest
+    image: 072216710152.dkr.ecr.sa-east-1.amazonaws.com/peso-repo:nginx-latest
     container_name: nginx_proxy
     restart: always
     ports:
