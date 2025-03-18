@@ -18,20 +18,32 @@ variable "domain_name" {
   default = "pesodevops.com"
 }
 
-resource "aws_route53_zone" "main" {
+resource "aws_route53_zone" "pesodevops" {
   name = var.domain_name
 }
 
 resource "aws_route53_record" "peso_root" {
-  zone_id = aws_route53_zone.main.id
+  zone_id = aws_route53_zone.pesodevops.zone_id
   name    = var.domain_name
   type    = "A"
-  records = [aws_eip.peso_eip.public_ip]
   ttl     = 300
+  records = [aws_eip.peso_eip.public_ip]
+}
+
+resource "aws_route53_record" "peso_www" {
+  zone_id = aws_route53_zone.pesodevops.zone_id
+  name    = "www.${var.domain_name}"
+  type    = "CNAME"
+  ttl     = 300
+  records = [var.domain_name]
 }
 
 output "peso_url" {
   value = "https://${aws_route53_record.peso_root.name}"
+}
+
+output "peso_www_url" {
+  value = "https://${aws_route53_record.peso_www.name}"
 }
 
 data "aws_caller_identity" "current" {}
