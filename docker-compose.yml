@@ -9,6 +9,8 @@ services:
       - NODE_ENV=production
     expose:
       - "3000"
+    networks:
+      - peso_network
 
   nginx:
     image: 072216710152.dkr.ecr.sa-east-1.amazonaws.com/peso-repo:nginx-latest
@@ -23,6 +25,8 @@ services:
       - letsencrypt:/etc/letsencrypt
     depends_on:
       - nextjs-service
+    networks:
+      - peso_network
 
   certbot:
     image: certbot/certbot
@@ -35,3 +39,6 @@ services:
 volumes:
   certbot_data:
   letsencrypt:
+
+networks:
+  peso_network:
