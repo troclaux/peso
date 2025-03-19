@@ -21,8 +21,8 @@ services:
       - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
-      - certbot_data:/var/www/certbot
-      - letsencrypt:/etc/letsencrypt
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
     depends_on:
       - nextjs-service
     networks:
@@ -32,13 +32,9 @@ services:
     image: certbot/certbot
     container_name: certbot
     volumes:
-      - certbot_data:/var/www/certbot
-      - letsencrypt:/etc/letsencrypt
-    entrypoint: "/bin/sh -c 'certbot certonly --webroot --webroot-path=/var/www/certbot --email arthur.moreira.1995@hotmail.com --agree-tos --no-eff-email --force-renewal -d pesodevops.com -d www.pesodevops.com'"
-
-volumes:
-  certbot_data:
-  letsencrypt:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    # entrypoint: "/bin/sh -c 'certbot certonly --webroot --webroot-path=/var/www/certbot --email arthur.moreira.1995@hotmail.com --agree-tos --no-eff-email -d pesodevops.com -d www.pesodevops.com'"
 
 networks:
   peso_network:
