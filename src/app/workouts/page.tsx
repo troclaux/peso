@@ -2,8 +2,17 @@
 
 import { WorkoutList } from '@/components/workouts/WorkoutList';
 import { Container } from '@/components/ui/container';
+import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 
 const WorkoutsPage = () => {
+
+  const { data: session } = useSession();
+
+  if (!session) {
+    redirect("/api/auth/signin?callbackUrl=/workouts");
+  }
+
   return (
     <Container>
       <div className="py-6">
