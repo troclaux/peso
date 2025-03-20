@@ -6,7 +6,7 @@ inventory.ini
 # terraform
 .terraform/
 terraform.tfstate
-terraform.tfstate.backup
+*.tfstate.*
 *.tfvars
 *.tfvars.json
 tfplan
