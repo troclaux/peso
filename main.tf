@@ -57,6 +57,7 @@ variable "AUTH_GOOGLE_ID" {}
 variable "AUTH_GOOGLE_SECRET" {}
 variable "AUTH_SECRET" {}
 variable "AUTH_TRUST_HOST" {}
+variable "NEXTAUTH_URL" {}
 
 resource "aws_secretsmanager_secret" "env_secret" {
   name = "peso-env-secret"
