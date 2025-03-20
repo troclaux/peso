@@ -10,5 +10,3 @@ sudo systemctl enable docker
 sudo systemctl start docker
 
 sudo snap install aws-cli --classic
-
-curl -sfL https://get.k3s.io | sh -
