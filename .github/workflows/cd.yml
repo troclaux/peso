@@ -43,7 +43,11 @@ jobs:
           REPOSITORY: peso-repo
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t $REGISTRY/$REPOSITORY:nextjs-$IMAGE_TAG -t $REGISTRY/$REPOSITORY:nextjs-latest .
+          docker build \
+            -t $REGISTRY/$REPOSITORY:nextjs-$IMAGE_TAG \
+            -t $REGISTRY/$REPOSITORY:nextjs-latest \
+            -f ./Dockerfile \
+            .
           docker push $REGISTRY/$REPOSITORY:nextjs-$IMAGE_TAG
           docker push $REGISTRY/$REPOSITORY:nextjs-latest
 
@@ -54,7 +58,11 @@ jobs:
           REPOSITORY: peso-repo
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t $REGISTRY/$REPOSITORY:nginx-$IMAGE_TAG -t $REGISTRY/$REPOSITORY:nginx-latest -f nginx/Dockerfile .
+          docker build \
+            -t $REGISTRY/$REPOSITORY:nginx-$IMAGE_TAG \
+            -t $REGISTRY/$REPOSITORY:nginx-latest \
+            -f ./nginx/Dockerfile \
+            ./nginx
           docker push $REGISTRY/$REPOSITORY:nginx-$IMAGE_TAG
           docker push $REGISTRY/$REPOSITORY:nginx-latest
 
