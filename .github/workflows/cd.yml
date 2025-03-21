@@ -100,8 +100,4 @@ jobs:
 
       - name: SSH and deploy via Docker Compose
         run: |
-          ssh ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
-            cd ~/peso
-            docker compose pull
-            docker compose up -d
-          EOF
+          ssh ubuntu@${{ secrets.EC2_PUBLIC_IP }} "cd ~/peso && docker compose pull && docker compose up -d"
