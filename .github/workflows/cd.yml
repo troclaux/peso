@@ -92,15 +92,11 @@ jobs:
 
       - name: Delete previous files on EC2
         run: |
-          ssh ubuntu@${{ secrets.EC2_PUBLIC_IP }} "rm -f ~/peso/docker-compose.yml ~/peso/.env.local"
+          ssh ubuntu@${{ secrets.EC2_PUBLIC_IP }} "rm -f ~/peso/docker-compose.yml"
 
       - name: Copy docker-compose.yml to EC2
         run: |
           scp docker-compose.yml ubuntu@${{ secrets.EC2_PUBLIC_IP }}:~/peso/docker-compose.yml
-
-      - name: Copy .env.local to EC2
-        run: |
-          scp .env.local ubuntu@${{ secrets.EC2_PUBLIC_IP }}:~/peso/.env.local
 
       - name: SSH and deploy via Docker Compose
         run: |
