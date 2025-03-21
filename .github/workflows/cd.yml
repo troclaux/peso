@@ -83,56 +83,29 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: sa-east-1
 
-      - name: Get EC2 IP address
-        id: get_ip
+      - name: Setup SSH key
         run: |
-          EC2_IP=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=Peso" --query "Reservations[0].Instances[0].PublicIpAddress" --output text)
-          echo "ec2_ip=$EC2_IP" >> $GITHUB_OUTPUT
-
-      - name: Setup SSH and Deploy
-        env:
-          REGISTRY: ${{ needs.docker-build-and-push.outputs.registry }}
-          EC2_IP: ${{ steps.get_ip.outputs.ec2_ip }}
-        run: |
-          PASSWORD=$(aws ecr get-login-password --region sa-east-1)
-
           mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.EC2_PUBLIC_IP }} >> ~/.ssh/known_hosts
 
-          scp -r k8s ubuntu@${{ secrets.EC2_HOST }}:~/
+      - name: Delete previous files on EC2
+        run: |
+          ssh ubuntu@${{ secrets.EC2_PUBLIC_IP }} "rm -f ~/peso/docker-compose.yml ~/peso/.env.local"
 
-          ssh ubuntu@${{ secrets.EC2_HOST }} << EOF
-            set -e
-            export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-            export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            export AWS_DEFAULT_REGION=sa-east-1
-            export REGISTRY=${{ needs.docker-build-and-push.outputs.registry }}
+      - name: Copy docker-compose.yml to EC2
+        run: |
+          scp docker-compose.yml ubuntu@${{ secrets.EC2_PUBLIC_IP }}:~/peso/docker-compose.yml
 
-            aws ecr get-login-password --region sa-east-1 | docker login --username AWS --password-stdin \${REGISTRY}
+      - name: Copy .env.local to EC2
+        run: |
+          scp .env.local ubuntu@${{ secrets.EC2_PUBLIC_IP }}:~/peso/.env.local
 
-            aws secretsmanager get-secret-value --secret-id peso-env-secret --query SecretString --output text | jq -r 'to_entries | map("\(.key)=\(.value)") | .[]' > ~/.env
-
-            sudo k3s kubectl create secret generic db-secret --from-env-file=~/.env --dry-run=client -o yaml | sudo k3s kubectl apply -f -
-
-            sudo k3s kubectl create secret docker-registry ecr-secret \\
-              --docker-server=\${REGISTRY} \\
-              --docker-username=AWS \\
-              --docker-password=\$(aws ecr get-login-password --region sa-east-1) \\
-              --dry-run=client -o yaml | sudo k3s kubectl apply -f -
-
-            sudo k3s kubectl create secret generic my-secret --from-env-file=~/.env --dry-run=client -o yaml > ~/k8s/secret.yaml
-            sudo k3s kubectl apply -f ~/k8s/secret.yaml
-
-            export REGISTRY=\${REGISTRY}
-
-            cd ~/k8s
-            envsubst < ec2-deployment.yaml | sudo k3s kubectl apply -f -
-
-            rm -f ~/.env
-
-            sudo k3s kubectl get pods
-            sudo k3s kubectl get svc
-            sudo k3s kubectl get ingress
+      - name: SSH and deploy via Docker Compose
+        run: |
+          ssh ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
+            cd ~/peso
+            docker compose pull
+            docker compose up -d
           EOF
