@@ -13,8 +13,8 @@ export default function Home() {
       <div className="bg-gradient-to-b from-primary/20 to-background py-20">
         <Container>
           <div className="flex flex-col items-center text-center">
-            <div className="mb-6 bg-primary/10 p-6 rounded-full">
-              <div className="text-primary text-5xl font-bold">PESO</div>
+            <div className="mb-6 bg-white p-6 rounded-full border border-black">
+              <div className="text-black text-5xl font-bold">PESO</div>
             </div>
             <h1 className="text-4xl font-bold mb-4">
               Simple Workout Tracking
