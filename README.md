@@ -1,18 +1,18 @@
 # Peso
 
-![CI/CD Status Badge](https://github.com/troclaux/peso/actions/workflows/ci.yml/badge.svg)
-![CI/CD Status Badge](https://github.com/troclaux/peso/actions/workflows/cd.yml/badge.svg)
+![CI Status Badge](https://github.com/troclaux/peso/actions/workflows/ci.yml/badge.svg)
+![CD Status Badge](https://github.com/troclaux/peso/actions/workflows/cd.yml/badge.svg)
 
-> full-stack web project that stores workout routines for users
+> Full-stack web app that stores workout routines for users, applying DevOps tools for deployment and infrastructure management
 
-- front-end
-  - next.js (react.js)
-  - tailwindcss
+- front end
+  - react.js
+    - next.js
+  - tailwind css
   - shadcn
   - lucide
-- back-end
+- back end
   - node.js
-  - express.js
   - postgresql
 - ci/cd
   - github actions
@@ -29,11 +29,11 @@
 
 ### to do
 
-- [ ] style profile page
 - [ ] add exercises by users
 
 - [ ] add tests
 - [ ] workflow to run tests
+- [ ] add layout buttons for mobile screens
 
 ### done
 
@@ -133,6 +133,7 @@
 - [x] make nginx/docker-compose setup tls certificates automatically
 - [x] deploy app with github actions only
 - [x] add ci/cd badge
+- [x] style profile page
 
 ## questions
 
