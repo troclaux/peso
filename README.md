@@ -1,7 +1,7 @@
 # Peso
 
-![CI Status Badge](https://github.com/troclaux/peso/actions/workflows/ci.yml/badge.svg)
-![CD Status Badge](https://github.com/troclaux/peso/actions/workflows/cd.yml/badge.svg)
+[![CI Status (main)](https://github.com/troclaux/peso/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/troclaux/peso/actions/workflows/ci.yml)
+[![CD Status (main)](https://github.com/troclaux/peso/actions/workflows/cd.yml/badge.svg?branch=main)](https://github.com/troclaux/peso/actions/workflows/cd.yml)
 
 > Full-stack web app that stores workout routines for users, applying DevOps tools for deployment and infrastructure management
 
@@ -17,23 +17,26 @@
 - ci/cd
   - github actions
   - docker
+    - docker compose
   - terraform
 - aws
   - ec2
   - rds
   - vpc
   - ecr
-  - cloudwatch
 
 ## kanban
 
 ### to do
 
-- [ ] add exercises by users
-
-- [ ] add tests
-- [ ] workflow to run tests
+- [ ] reduce size of elastic block storage
+- [ ] reduce ec2 instance type
 - [ ] add layout buttons for mobile screens
+
+### done
+
+- [x] add tests
+- [x] workflow to run tests
 
 ### done
 
@@ -134,6 +137,7 @@
 - [x] deploy app with github actions only
 - [x] add ci/cd badge
 - [x] style profile page
+- [x] add exercises by users
 
 ## questions
 
@@ -145,8 +149,8 @@
 
 - how do i block a page from unauthorized users in next.js?
   - if you're using auth.js for authentication:
-    - front-end: `useSession()`, `if (!session) { redirect("/api/auth/signin?callbackUrl=/exercises"); }`
-    - back-end: wrap api function for a specific http verb (e.g. `PUT`, `GET`, etc) with `auth()`
+    - front end: `useSession()`, `if (!session) { redirect("/api/auth/signin?callbackUrl=/exercises"); }`
+    - back end: wrap api function for a specific http verb (e.g. `PUT`, `GET`, etc) with `auth()`
       - e.g. `export const POST = auth(async function POST(req: Request)`
 - what is the directory structure for components?
   - everything is explained in [next.js docs](https://nextjs.org/docs)
