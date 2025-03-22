@@ -31,12 +31,6 @@
 
 - [ ] reduce size of elastic block storage
 - [ ] reduce ec2 instance type
-- [ ] add layout buttons for mobile screens
-
-### done
-
-- [x] add tests
-- [x] workflow to run tests
 
 ### done
 
@@ -74,6 +68,8 @@
   - [x] form to create and edit workout
 - [x] workout page
 - [x] dockerfile to run application
+- [x] add tests
+- [x] workflow to run tests
 - [x] workflow to build and push docker image to aws ecr
 - [x] define env vars to create infrastructure
 - [x] setup terraform file for aws IaC
@@ -138,6 +134,7 @@
 - [x] add ci/cd badge
 - [x] style profile page
 - [x] add exercises by users
+- [x] add layout buttons for mobile screens
 
 ## questions
 
