@@ -103,9 +103,6 @@ export default function Home() {
               </Link>
             </div>
           </div>
-          <div className="text-center text-muted-foreground text-sm mt-6">
-            © {new Date().getFullYear()} PESO
-          </div>
         </div>
       </Container>
     </div>
