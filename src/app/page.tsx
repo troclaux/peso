@@ -10,7 +10,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
-      <div className="bg-gradient-to-b from-primary/20 to-background py-20">
+      <div className="bg-gradient-to-br from-primary/30 via-primary/10 to-background py-20">
         <Container>
           <div className="flex flex-col items-center text-center">
             <div className="mb-6 p-6 rounded-full">
