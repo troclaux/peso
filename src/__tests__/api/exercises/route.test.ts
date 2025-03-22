@@ -3,11 +3,11 @@
  */
 
 import { NextResponse } from 'next/server';
-import { pool, auth } from '@/auth';
+import { pool } from '@/auth';
 
 jest.mock('next/server', () => ({
   NextResponse: {
-    json: jest.fn().mockImplementation((body, options) => ({}))
+    json: jest.fn().mockImplementation(() => ({}))
   },
 }));
 
@@ -32,7 +32,7 @@ describe('/api/exercises route', () => {
         json: jest.fn().mockResolvedValue({ name: 'Test Exercise' }),
       };
 
-      await POST(req as any);
+      await POST(req as unknown as Request);
 
       expect(NextResponse.json).toHaveBeenCalledWith(
         { error: 'Unauthorized' },
@@ -53,7 +53,7 @@ describe('/api/exercises route', () => {
         }),
       };
 
-      await POST(req as any);
+      await POST(req as unknown as Request);
 
       expect(pool.query).toHaveBeenCalled();
       expect(NextResponse.json).toHaveBeenCalled();
@@ -70,7 +70,7 @@ describe('/api/exercises route', () => {
         auth: { userId: 123 },
       };
 
-      await GET(req as any);
+      await GET(req as unknown as Request);
 
       expect(pool.query).toHaveBeenCalled();
       expect(NextResponse.json).toHaveBeenCalled();
