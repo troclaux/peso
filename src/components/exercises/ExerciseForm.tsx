@@ -15,6 +15,7 @@ interface Exercise {
   description: string | null;
   created_at: string;
   updated_at: string;
+  user_id: number;
 }
 
 interface ExerciseFormProps {

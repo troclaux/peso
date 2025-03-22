@@ -8,14 +8,19 @@ export const POST = auth(async function POST(req: Request) {
 
   try {
     const { name, description } = await req.json();
+    const userId = req.auth.userId;
 
     if (!name) {
       return NextResponse.json({ error: 'Name is required' }, { status: 400 });
     }
 
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+    }
+
     const result = await pool.query(
-      'INSERT INTO exercises (name, description) VALUES ($1, $2) RETURNING *',
-      [name, description || null]
+      'INSERT INTO exercises (name, description, user_id) VALUES ($1, $2, $3) RETURNING *',
+      [name, description || null, userId]
     );
 
     return NextResponse.json(result.rows[0]);
@@ -31,7 +36,16 @@ export const GET = auth(async function GET(req) {
   }
 
   try {
-    const result = await pool.query('SELECT * FROM exercises ORDER BY name');
+    const userId = req.auth.userId;
+
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+    }
+
+    const result = await pool.query(
+      'SELECT * FROM exercises WHERE user_id = $1 ORDER BY name',
+      [userId]
+    );
     return NextResponse.json(result.rows);
   } catch (error) {
     console.error('Error fetching exercises:', error);
