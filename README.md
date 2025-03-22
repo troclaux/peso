@@ -1,5 +1,8 @@
 # Peso
 
+![CI/CD Status Badge](https://github.com/troclaux/peso/actions/workflows/ci.yml/badge.svg)
+![CI/CD Status Badge](https://github.com/troclaux/peso/actions/workflows/cd.yml/badge.svg)
+
 > full-stack web project that stores workout routines for users
 
 - front-end
@@ -26,12 +29,11 @@
 
 ### to do
 
-- [ ] make nginx/docker-compose setup tls certificates automatically
-- [ ] deploy app with github actions only
+- [ ] style profile page
+- [ ] add exercises by users
 
 - [ ] add tests
 - [ ] workflow to run tests
-- [ ] add ci/cd badge
 
 ### done
 
@@ -128,6 +130,9 @@
   - [x] sets up next.js app using ecr image
   - [x] sets up nginx as reverse proxy the next.js servers
 - [x] make nginx + next.js deployment work in the cloud
+- [x] make nginx/docker-compose setup tls certificates automatically
+- [x] deploy app with github actions only
+- [x] add ci/cd badge
 
 ## questions
 
