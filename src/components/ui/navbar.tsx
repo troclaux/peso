@@ -48,11 +48,13 @@ export function Navbar({ session }: NavbarProps) {
           <NavLink href="/">Home</NavLink>
           <NavLink href="/workouts">Workouts</NavLink>
           <NavLink href="/exercises">Exercises</NavLink>
-          <NavLink href="/profile">Profile</NavLink>
           {session ? (
-            <Button variant="outline" size="sm" asChild className="ml-1">
-              <Link href="/api/auth/signout?callbackUrl=/">Logout</Link>
-            </Button>
+            <>
+              <NavLink href="/profile">Profile</NavLink>
+              <Button variant="outline" size="sm" asChild className="ml-1">
+                <Link href="/api/auth/signout?callbackUrl=/">Logout</Link>
+              </Button>
+            </>
           ) : (
             <Button variant="default" size="sm" asChild className="ml-1">
               <Link href="/api/auth/signin">Sign in</Link>
