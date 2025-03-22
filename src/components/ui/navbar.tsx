@@ -43,24 +43,22 @@ export function Navbar({ session }: NavbarProps) {
           >
             Peso
           </Link>
-          <nav className="hidden md:flex items-center space-x-2">
-            <NavLink href="/">Home</NavLink>
-            <NavLink href="/workouts">Workouts</NavLink>
-            <NavLink href="/exercises">Exercises</NavLink>
-            <NavLink href="/profile">Profile</NavLink>
-          </nav>
         </div>
-        <div className="flex items-center pr-2">
+        <nav className="flex items-center space-x-1 overflow-x-auto">
+          <NavLink href="/">Home</NavLink>
+          <NavLink href="/workouts">Workouts</NavLink>
+          <NavLink href="/exercises">Exercises</NavLink>
+          <NavLink href="/profile">Profile</NavLink>
           {session ? (
-            <Button variant="outline" size="sm" asChild>
+            <Button variant="outline" size="sm" asChild className="ml-1">
               <Link href="/api/auth/signout?callbackUrl=/">Logout</Link>
             </Button>
           ) : (
-            <Button variant="default" size="sm" asChild>
+            <Button variant="default" size="sm" asChild className="ml-1">
               <Link href="/api/auth/signin">Sign in</Link>
             </Button>
           )}
-        </div>
+        </nav>
       </div>
     </header>
   )
