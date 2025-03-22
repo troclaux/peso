@@ -9,23 +9,42 @@ on:
       - main
 
 jobs:
-
-  style:
-    name: Style
+  test:
+    name: Test
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out code
+      - name: check out code
         uses: actions/checkout@v4
 
-      - name: Set up Node.js v.22
+      - name: set up node
         uses: actions/setup-node@v3
         with:
           node-version: '22'
           cache: 'npm'
 
-      - name: Install dependencies
+      - name: install dependencies
         run: npm install
 
-      - name: check formatting
+      - name: run tests
+        run: npm test
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: check out code
+        uses: actions/checkout@v4
+
+      - name: set up node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: install dependencies
+        run: npm install
+
+      - name: run linting
         run: npm run lint
