@@ -318,11 +318,6 @@ resource "aws_iam_policy" "ecr_pull_policy" {
         "ecr:DescribeRepositories"
       ],
       "Resource": "*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": "ecr:GetAuthorizationToken",
-      "Resource": "*"
     }
   ]
 }
