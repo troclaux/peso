@@ -18,8 +18,10 @@ function NavLink({ href, children, className }: NavLinkProps) {
     <Link
       href={href}
       className={cn(
-        buttonVariants({ variant: "ghost", size: "sm" }),
-        isActive && "bg-accent text-accent-foreground",
+        buttonVariants({ variant: "outline", size: "sm" }),
+        isActive 
+          ? "bg-white text-black font-semibold border-2 border-white" 
+          : "bg-white/80 text-black font-medium hover:bg-white hover:text-black border border-white",
         className
       )}
     >
