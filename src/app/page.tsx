@@ -10,16 +10,20 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
-      <div className="bg-gradient-to-br from-primary/30 via-primary/10 to-background py-20">
-        <Container>
+      <div
+        className="py-20 relative bg-cover bg-center"
+        style={{ backgroundImage: "url('/exercise.jpg')" }}
+      >
+        <div className="absolute inset-0 bg-black/40"></div>
+        <Container className="relative z-10">
           <div className="flex flex-col items-center text-center">
             <div className="mb-6 p-6 rounded-full">
-              <div className="text-black text-5xl font-bold">PESO</div>
+              <div className="text-white text-5xl font-bold">PESO</div>
             </div>
-            <h1 className="text-4xl font-bold mb-4">
+            <h1 className="text-4xl font-bold mb-4 text-white">
               Simple Workout Tracking
             </h1>
-            <p className="text-xl text-muted-foreground max-w-md mb-8">
+            <p className="text-xl text-white/80 max-w-md mb-8">
               Track your fitness journey with ease
             </p>
             <div className="flex gap-4">
@@ -32,7 +36,7 @@ export default function Home() {
                   <Link href="/auth/signin">Get Started</Link>
                 </Button>
               )}
-              <Button variant="outline" size="lg" asChild>
+              <Button variant="outline" size="lg" asChild className="bg-white/10 text-white border-white/20 hover:bg-white/20">
                 <Link href="/exercises">Exercises</Link>
               </Button>
             </div>
