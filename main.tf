@@ -346,14 +346,17 @@ resource "aws_instance" "peso_instance" {
 
   user_data = <<-EOF
     #!/bin/bash
-    yum update -y
-    yum install -y docker
+    apt update -y
+    apt install -y docker.io curl
+
     systemctl start docker
     systemctl enable docker
-    curl -L "https://github.com/docker/compose/releases/download/v2.20.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
+    curl -SL https://github.com/docker/compose/releases/download/v2.20.3/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
     chmod +x /usr/local/bin/docker-compose
     ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
-    usermod -aG docker ec2-user
+
+    usermod -aG docker ubuntu
   EOF
 
   tags = {
