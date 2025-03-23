@@ -28,7 +28,11 @@ export default function Home() {
             </p>
             <div className="flex gap-4">
               {session ? (
-                <Button size="lg" asChild>
+                <Button 
+                  size="lg" 
+                  asChild 
+                  className="bg-white text-black font-semibold border-2 border-white hover:bg-white/90 hover:text-black"
+                >
                   <Link href="/workouts">My Workouts</Link>
                 </Button>
               ) : (
