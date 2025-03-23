@@ -18,6 +18,9 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "Peso",
   description: "Track your workout routines and progress",
+  icons: {
+    icon: '/logo.svg',
+  },
 };
 
 export default async function RootLayout({
