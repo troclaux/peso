@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - docker-compose
   pull_request:
     branches:
       - main
@@ -104,6 +103,7 @@ jobs:
             aws ecr get-login-password --region sa-east-1 | docker login --username AWS --password-stdin 072216710152.dkr.ecr.sa-east-1.amazonaws.com
             cd ~/peso
             docker-compose pull
+            docker image prune -f
             docker-compose up -d
           EOF
         env:
