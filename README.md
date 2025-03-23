@@ -29,9 +29,6 @@
 
 ### to do
 
-- [ ] reduce size of elastic block storage
-- [ ] reduce ec2 instance type
-
 ### done
 
 - [x] add lint workflow
@@ -110,8 +107,8 @@
 - [x] script to deploy on ec2
 - [x] workflow pushes container images to ecr repo
 - [x] fix google authentication bug
-- [x] deploy app in ec2 instance without tls certificates
-- [x] deploy app in ec2 instance with tls certificates
+- [x] deploy app in ec2 instance without ssl certificates
+- [x] deploy app in ec2 instance with ssl certificates
 - [x] docker pull from ecr
   - `aws ecr get-login-password --region sa-east-1 | docker login --username AWS --password-stdin 072216710152.dkr.ecr.sa-east-1.amazonaws.com`
 - [x] make registered domain point to your ec2 instance's public ip
@@ -129,7 +126,7 @@
   - [x] sets up next.js app using ecr image
   - [x] sets up nginx as reverse proxy the next.js servers
 - [x] make nginx + next.js deployment work in the cloud
-- [x] make nginx/docker-compose setup tls certificates automatically
+- [x] make nginx/docker-compose setup ssl certificates automatically
 - [x] deploy app with github actions only
 - [x] add ci/cd badge
 - [x] style profile page
@@ -140,7 +137,7 @@
 
 ### unresolved
 
-- check if aws internet gateway is necessary for architecture
+- is aws internet gateway necessary for architecture?
 
 ### solved
 
@@ -151,6 +148,7 @@
       - e.g. `export const POST = auth(async function POST(req: Request)`
 - what is the directory structure for components?
   - everything is explained in [next.js docs](https://nextjs.org/docs)
+  - [my explanation](https://github.com/troclaux/notes/blob/main/next.md#directory-structure)
 - how do i setup terraform for aws?
   - how do i add my credentials?
     - generate aws access keys, source them in `.env` or store them in aws secrets manager
@@ -167,14 +165,15 @@
   - conditions
 - how do i configure nginx?
   - implement basic nginx.conf and a Dockerfile that will run nginx
-  - do i change my current image (node.js official)?
-    - yes, use one image to run next.js and another to run nginx
+  - do i need to use two container images?
+    - yes, one image for next.js and another to run nginx
 - how do i start nginx inside ec2's docker container? docker compose
 - how do i run migrations in rds?
   - add your computer to the ingress rules
   - connect to postgresql database using `psql` with credentials
   - migrate with goose
 - where do i store each credential? (e.g. aws secrets manager, github secrets, my own computer)
+  - NEVER in github repo
   - aws credentials
   - database credentials
   - google auth credentials
@@ -225,7 +224,6 @@
 - workflow to pull from github origin and ecr to deploy application
   - ssh into ec2
     - how do i use .pem to ssh into ec2? copy file's content and paste into github's repo secrets
-    - how do i pass .env vars to dockerfile securely? aws secrets manager
   - pull container images from ecr
   - delete `docker-compose.yml` in ec2 instance
   - copy `docker-compose.yml` to ec2 instance
