@@ -98,8 +98,13 @@ export default function Home() {
               <Link href="/workouts" className="text-muted-foreground hover:text-foreground">
                 Workouts
               </Link>
-              <Link href="/profile" className="text-muted-foreground hover:text-foreground">
-                Profile
+              {session && (
+                <Link href="/profile" className="text-muted-foreground hover:text-foreground">
+                  Profile
+                </Link>
+              )}
+              <Link href="https://github.com/troclaux/peso" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
+                Source Code
               </Link>
             </div>
           </div>
