@@ -29,12 +29,12 @@
 
 ### Infrastructure as Code (Terraform)
 
-- Compute: EC2 t3.micro instance with Docker and Docker Compose pre-installed
-- Database: RDS PostgreSQL with multi-AZ support
-- Networking: Custom VPC with public subnets across multiple availability zones, security groups, internet gateway
-- Container Registry: ECR repository with image scanning and lifecycle policies (keeping last 10 images)
+- Compute: EC2 t3.micro instance with Docker and Docker Compose
+- Database: RDS PostgreSQL
+- Networking: Custom VPC
+- Container Registry: ECR repository
 - DNS Management: Route53 zone for domain (pesodevops.com)
-- Security: IAM roles and policies for EC2 to access ECR and Secrets Manager
+- Security: IAM roles and policies for EC2 to access ECR
 - Secrets Management: AWS Secrets Manager for securely storing environment variables
 
 ### Containerization
@@ -50,14 +50,13 @@ Automated deployment pipeline triggered on pushes to main branch:
   - Builds Next.js application container
   - Builds Nginx container
   - Pushes both images to AWS ECR
-
 - Deployment to EC2:
   - Connects to EC2 instance via SSH
   - Updates docker-compose.yml on the server
   - Authenticates with ECR
   - Pulls latest container images
   - Cleans up old images
-  - Deploys the application with zero-downtime updates
+  - Deploys the application
 
 ## kanban
 
@@ -171,8 +170,6 @@ Automated deployment pipeline triggered on pushes to main branch:
 
 ### unresolved
 
-- is aws internet gateway necessary for architecture?
-
 ### solved
 
 - how do i block a page from unauthorized users in next.js?
@@ -214,6 +211,11 @@ Automated deployment pipeline triggered on pushes to main branch:
 - ec2 setup
   - don't forget to configure security groups in terraform file
   - install aws cli, docker, docker compose
+- is aws internet gateway necessary for architecture? connects my vpc to the public internet
+  - allows vpc to send and receive traffic from the internet
+  - it must be attached to the vpc
+  - route tables must explicitly route traffic through it
+    - route table: set of rules that control how network traffic leaves or enters a subnet inside vpc
 - how do i get ssl certificate? use certbot
 - should i scp to copy my .env vars to ec2 instance or use aws secrets manager?
   - aws secrets manager is safer
