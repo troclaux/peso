@@ -28,19 +28,28 @@ export default function Home() {
             </p>
             <div className="flex gap-4">
               {session ? (
-                <Button 
-                  size="lg" 
-                  asChild 
-                  className="bg-white text-black font-semibold border-2 border-white hover:bg-white/90 hover:text-black"
+                <Button
+                  size="lg"
+                  asChild
+                  className="bg-transparent text-white font-semibold border-2 border-white hover:bg-white hover:text-black"
                 >
                   <Link href="/workouts">My Workouts</Link>
                 </Button>
               ) : (
-                <Button size="lg" asChild>
+                <Button
+                  size="lg"
+                  asChild
+                  className="bg-transparent text-white font-semibold border-2 border-white hover:bg-white hover:text-black"
+                >
                   <Link href="/auth/signin">Get Started</Link>
                 </Button>
               )}
-              <Button variant="outline" size="lg" asChild className="bg-white/10 text-white border-white/20 hover:bg-white/20">
+              <Button
+                variant="outline"
+                size="lg"
+                asChild
+                className="bg-transparent text-white font-semibold border-2 border-white hover:bg-white hover:text-black"
+              >
                 <Link href="/exercises">Exercises</Link>
               </Button>
             </div>
@@ -112,7 +121,7 @@ export default function Home() {
                 </Link>
               )}
               <Link href="https://github.com/troclaux/peso" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
-                Source Code
+                🔗 Source Code On GitHub
               </Link>
             </div>
           </div>
