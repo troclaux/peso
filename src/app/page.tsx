@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { useSession } from 'next-auth/react';
 
 export default function Home() {
@@ -84,23 +85,25 @@ export default function Home() {
         </div>
       </Container>
 
-      <div className="bg-primary/5 py-12">
+      <div className="py-12">
         <Container>
-          <div className="text-center">
-            <h2 className="text-2xl font-bold mb-4">Ready to start?</h2>
-            <p className="text-muted-foreground mb-6">
-              Join today and begin your fitness journey
-            </p>
-            {session ? (
-              <Button asChild>
-                <Link href="/workouts/new">Create Workout</Link>
-              </Button>
-            ) : (
-              <Button asChild>
-                <Link href="/auth/signin">Sign In</Link>
-              </Button>
-            )}
-          </div>
+          <Card className="w-full">
+            <CardHeader className="text-center">
+              <CardTitle>Ready to start?</CardTitle>
+              <CardDescription>Join today and begin your fitness journey</CardDescription>
+            </CardHeader>
+            <CardFooter className="flex justify-center pb-6">
+              {session ? (
+                <Button asChild>
+                  <Link href="/workouts/new">Create Workout</Link>
+                </Button>
+              ) : (
+                <Button asChild>
+                  <Link href="/auth/signin">Sign In</Link>
+                </Button>
+              )}
+            </CardFooter>
+          </Card>
         </Container>
       </div>
 
