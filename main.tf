@@ -331,7 +331,7 @@ resource "aws_iam_role_policy_attachment" "ecr_pull_attach" {
 
 resource "aws_instance" "peso_instance" {
   ami                         = "ami-04d88e4b4e0a5db46"
-  instance_type               = "t3.small"
+  instance_type               = "t3.micro"
   subnet_id                   = aws_subnet.main.id
   vpc_security_group_ids      = [aws_security_group.ec2_sg.id, aws_security_group.docker_sg.id]
   associate_public_ip_address = true
