@@ -1,5 +1,6 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
+import GitHub from "next-auth/providers/github";
 import PostgresAdapter from "@auth/pg-adapter";
 import { Pool } from "pg";
 
@@ -15,5 +16,5 @@ export const pool = new Pool({
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PostgresAdapter(pool),
-  providers: [Google],
+  providers: [Google, GitHub],
 });
