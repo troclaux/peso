@@ -64,11 +64,12 @@ Automated deployment pipeline triggered on pushes to main branch:
 
 ### done
 
-- [x] add lint workflow
-- [x] choose auth provider (auth.js)
-- [x] install and setup auth.js
-- [x] define and implement database schema
-- [x] setup postgresql database with goose
+- [x] choose auth provider
+- [x] install and setup auth.js [auth.js](https://github.com/troclaux/notes/blob/main/auth.md)
+  - [x] setup Google OAuth provider
+  - [x] setup GitHub OAuth provider
+- [x] define database schema
+- [x] setup postgresql database schema with goose
 - [x] sign up page
 - [x] log in page
 - [x] add log in and sign out buttons in layout
@@ -96,21 +97,23 @@ Automated deployment pipeline triggered on pushes to main branch:
 - [x] workout components
   - [x] workout list
   - [x] form to create and edit workout
+    - [x] search form to find exercise that will be added to workout
 - [x] workout page
 - [x] dockerfile to run application
 - [x] add tests
-- [x] workflow to run tests
-- [x] workflow to build and push docker image to aws ecr
+- [x] add lint [GitHub Actions](https://github.com/troclaux/notes/blob/main/github_actions.md) workflow
+- [x] add workflow to run tests
+- [x] add workflow to build and push docker image to aws ecr
 - [x] define env vars to create infrastructure
-- [x] setup terraform file for aws IaC
-  - [x] create
-    - [x] ec2 instance (don't forget to create it with a key-pair)
-      - [x] install docker and docker-compose
-    - [x] vpc
-    - [x] security groups
-    - [x] rds database
-    - [x] ecr
-    - [x] policies
+- [x] setup [terraform](https://github.com/troclaux/notes/blob/main/terraform.md) file for [aws](https://github.com/troclaux/notes/blob/main/aws.md) IaC
+  - [x] ec2 instance (don't forget to create it with a key-pair)
+    - [x] install [docker](https://github.com/troclaux/notes/blob/main/docker.md) and docker-compose
+  - [x] vpc
+  - [x] gateway
+  - [x] security groups
+  - [x] rds database
+  - [x] ecr
+  - [x] IAM policies
   - [x] terraform plan and apply
 - [x] implement dockerfile to build and run application
 - [x] implement github actions workflow to build and push docker image to ecr
@@ -119,51 +122,52 @@ Automated deployment pipeline triggered on pushes to main branch:
 - [x] implement database schema on rds
   - [x] get access ec2
   - [x] configure ec2
-    - [x] install postgres client on ec2: `sudo yum install postgresql -y`
-    - [x] install docker on ec2: `sudo yum update -y && sudo yum -y install docker`
+    - [x] install docker on ec2: `sudo apt update && sudo apt -y install docker.io`
     - [x] start docker service on ec2: `sudo service docker start`
     - [x] access rds database: `psql -h host_url.region.rds.amazonaws.com -U myuser -d db_name -p db_port` (creates database if it doesn't exist)
-  - [x] apply schema in rds with goose using .env vars
-  - [x] run database migrations
+    - [x] add user_data in terraform to quickly setup new ec2 instance
+  - [x] apply schema in rds with goose using .env vars (easier to use credentials safely)
+  - [x] run database migrations with [Goose](https://github.com/troclaux/notes/blob/main/web_development.md#database-migration-with-goose-and-api-integration-with-sqlc)
 - [x] implement `nginx.conf` with the following requirements:
   - reverse proxy for next.js full-stack dynamic web app that connects to an rds postgresql database
   - update domain's DNS record to point to ip address where app is hosted (ec2's docker container)
 - [x] pass env vars to aws parameter store or secrets manager in terraform file (without hardcoding them)
-- [x] implement Dockerfile to run the application and nginx
+- [x] implement Dockerfile to run the application and [nginx](https://github.com/troclaux/notes/blob/main/nginx.md)
 - [x] add iam policy to give ec2 intance access to aws secrets manager variables
   - [x] create policy
   - [x] attach policy to iam role (if one already exists, if not make a new one)
   - [x] add role to ec2
   - [x] verify if ec2 has access to parameter store
 - [x] make nginx + next.js deployment work locally
-- [x] get domain (pesodevops.com)
-- [x] script to deploy on ec2
+- [x] register domain in route 53 (pesodevops.com)
 - [x] workflow pushes container images to ecr repo
-- [x] fix google authentication bug
+- [x] fix google authentication not redirecting back to application after login
 - [x] deploy app in ec2 instance without ssl certificates
 - [x] deploy app in ec2 instance with ssl certificates
 - [x] docker pull from ecr
+  - [x] add security groups and credentials to allow pull
   - `aws ecr get-login-password --region sa-east-1 | docker login --username AWS --password-stdin 072216710152.dkr.ecr.sa-east-1.amazonaws.com`
 - [x] make registered domain point to your ec2 instance's public ip
   - [x] add records to the hosted zone
   - records contain information about how to route traffic for your domain and any subdomains
 - [x] docker-compose for local development environment
-  - [x] setup ec2 t2.small
-  - [x] register domain
+  - [x] setup ec2 t3.small
   - [x] make domain point to ec2
   - [x] configure google oauth
 - [x] set up cert-manager in nginx container
 - [x] fix google authorized redirect uris
 - [x] deploy on ec2 with ssh
-- [x] deploy with docker-compose
+- [x] deploy on ec2 with docker-compose
   - [x] sets up next.js app using ecr image
   - [x] sets up nginx as reverse proxy the next.js servers
 - [x] make nginx + next.js deployment work in the cloud
 - [x] make nginx/docker-compose setup ssl certificates automatically
 - [x] deploy app with github actions only
 - [x] add ci/cd badge
-- [x] style profile page
+- [x] style profile page with tailwind
 - [x] add exercises by users
+- [x] add stock image as background in home page
+- [x] add browser icon
 - [x] add layout buttons for mobile screens
 
 ## questions
