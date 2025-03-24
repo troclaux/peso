@@ -7,9 +7,6 @@ const nextConfig: NextConfig = {
   // eslint: {
   //   ignoreDuringBuilds: true,
   // },
-  env: {
-    AUTH_TRUST_HOST: "true",
-  },
 };
 
 export default nextConfig;
