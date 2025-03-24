@@ -5,25 +5,59 @@
 
 > Full-stack web app that stores workout routines for users, applying DevOps tools for deployment and infrastructure management
 
-- front end
+- Front End
   - react.js
     - next.js
-  - tailwind css
-  - shadcn
-  - lucide
-- back end
+  - Tailwind CSS
+  - Shadcn
+  - Lucide
+- Back End
   - node.js
-  - postgresql
-- ci/cd
-  - github actions
-  - docker
-    - docker compose
-  - terraform
-- aws
-  - ec2
-  - rds
-  - vpc
-  - ecr
+  - PostgreSQL
+- CI/CD
+  - Github Actions
+  - Docker
+    - Docker Compose
+  - Terraform
+- AWS
+  - EC2
+  - RDS
+  - VPC
+  - ECR
+
+## DevOps
+
+### Infrastructure as Code (Terraform)
+
+- Compute: EC2 t3.micro instance with Docker and Docker Compose pre-installed
+- Database: RDS PostgreSQL with multi-AZ support
+- Networking: Custom VPC with public subnets across multiple availability zones, security groups, internet gateway
+- Container Registry: ECR repository with image scanning and lifecycle policies (keeping last 10 images)
+- DNS Management: Route53 zone for domain (pesodevops.com)
+- Security: IAM roles and policies for EC2 to access ECR and Secrets Manager
+- Secrets Management: AWS Secrets Manager for securely storing environment variables
+
+### Containerization
+
+- Dockerfile for Next.js
+- Dockerfile for Nginx
+
+### CI/CD Pipeline (GitHub Actions)
+
+Automated deployment pipeline triggered on pushes to main branch:
+
+- Build and push container images:
+  - Builds Next.js application container
+  - Builds Nginx container
+  - Pushes both images to AWS ECR
+
+- Deployment to EC2:
+  - Connects to EC2 instance via SSH
+  - Updates docker-compose.yml on the server
+  - Authenticates with ECR
+  - Pulls latest container images
+  - Cleans up old images
+  - Deploys the application with zero-downtime updates
 
 ## kanban
 
@@ -227,6 +261,6 @@
   - pull container images from ecr
   - delete `docker-compose.yml` in ec2 instance
   - copy `docker-compose.yml` to ec2 instance
-  - get credentials
   - run `docker-compose down`
+  - run `docker image prune -f`
   - run `docker-compose up -d`
