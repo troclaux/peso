@@ -109,21 +109,21 @@ export default function Home() {
 
       <Container>
         <div className="border-t py-8 mt-8">
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             <div className="font-bold">PESO</div>
-            <div className="flex gap-4">
-              <Link href="/exercises" className="text-muted-foreground hover:text-foreground">
+            <div className="flex flex-wrap justify-center gap-3">
+              <Link href="/exercises" className="text-muted-foreground hover:text-foreground px-1">
                 Exercises
               </Link>
-              <Link href="/workouts" className="text-muted-foreground hover:text-foreground">
+              <Link href="/workouts" className="text-muted-foreground hover:text-foreground px-1">
                 Workouts
               </Link>
               {session && (
-                <Link href="/profile" className="text-muted-foreground hover:text-foreground">
+                <Link href="/profile" className="text-muted-foreground hover:text-foreground px-1">
                   Profile
                 </Link>
               )}
-              <Link href="https://github.com/troclaux/peso" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
+              <Link href="https://github.com/troclaux/peso" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground px-1">
                 🔗 Source Code On GitHub
               </Link>
             </div>
