@@ -5,6 +5,8 @@
 
 > Full-stack web app that stores workout routines for users, applying DevOps tools for deployment and infrastructure management
 
+[pesodevops.com](https://pesodevops.com)
+
 - Front End
   - react.js
     - next.js
