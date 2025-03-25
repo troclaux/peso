@@ -366,7 +366,7 @@ resource "aws_instance" "peso_instance" {
 
 resource "aws_db_instance" "postgres_db" {
   allocated_storage      = 20
-  storage_type           = "gp2"
+  storage_type           = "gp3"
   engine                 = "postgres"
   engine_version         = "14.17"
   instance_class         = "db.t3.micro"
@@ -379,8 +379,6 @@ resource "aws_db_instance" "postgres_db" {
   publicly_accessible    = true
   skip_final_snapshot    = true
   depends_on             = [aws_db_subnet_group.main, aws_security_group.rds_sg]
-  # apply_immediately         = true
-  # final_snapshot_identifier = null
 
   tags = {
     Name = "PostgreSQL DB"
