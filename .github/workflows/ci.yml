@@ -1,4 +1,4 @@
-name: ci
+name: CI Workflow
 
 on:
   push:
@@ -48,3 +48,59 @@ jobs:
 
       - name: run linting
         run: npm run lint
+
+  docker-build-and-push:
+    name: build and push docker images to ECR
+    runs-on: ubuntu-latest
+    needs: [test, lint]
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    outputs:
+      registry: ${{ steps.login-ecr.outputs.registry }}
+
+    steps:
+
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: sa-east-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: build, tag, and push next.js docker image
+        id: docker-push-nextjs
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: peso-repo
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build \
+            -t $REGISTRY/$REPOSITORY:nextjs-$IMAGE_TAG \
+            -t $REGISTRY/$REPOSITORY:nextjs-latest \
+            -f ./Dockerfile \
+            .
+          docker push $REGISTRY/$REPOSITORY:nextjs-$IMAGE_TAG
+          docker push $REGISTRY/$REPOSITORY:nextjs-latest
+
+      - name: build, tag, and push nginx docker image
+        id: docker-push-nginx
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: peso-repo
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build \
+            -t $REGISTRY/$REPOSITORY:nginx-$IMAGE_TAG \
+            -t $REGISTRY/$REPOSITORY:nginx-latest \
+            -f ./nginx/Dockerfile \
+            ./nginx
+          docker push $REGISTRY/$REPOSITORY:nginx-$IMAGE_TAG
+          docker push $REGISTRY/$REPOSITORY:nginx-latest
