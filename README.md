@@ -258,17 +258,21 @@ Automated deployment pipeline triggered on pushes to main branch:
 
 ## pseudocode for CI/CD pipelines
 
-- workflow to build and push docker image
-  - checkout code
-  - configure aws credentials
-  - login into aws ecr
+- CI
+  - test and lint next.js application
   - build and push docker image to ecr
-- workflow to pull from github origin and ecr to deploy application
-  - ssh into ec2
-    - how do i use .pem to ssh into ec2? copy file's content and paste into github's repo secrets
-  - pull container images from ecr
-  - delete `docker-compose.yml` in ec2 instance
-  - copy `docker-compose.yml` to ec2 instance
-  - run `docker-compose down`
-  - run `docker image prune -f`
-  - run `docker-compose up -d`
+    - checkout code from repository
+    - configure aws credentials for ecr access
+    - login to aws ecr
+    - build and tag docker image for next.js app
+    - build and tag docker image for nginx
+    - push both docker images to ecr
+- CD
+  - deploy latest docker images on ec2 instance
+    - ssh into ec2
+    - pull latest container images from ecr
+    - remove existing `docker-compose.yml` file on ec2
+    - copy new `docker-compose.yml` to ec2 instance
+    - stop and remove running application with `docker-compose down`
+    - clean up unused docker images with `docker image prune -f`
+    - restart application with `docker-compose up -d`
