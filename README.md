@@ -44,21 +44,28 @@
 - Dockerfile for Next.js
 - Dockerfile for Nginx
 
-### CI/CD Pipeline (GitHub Actions)
+### pseudocode for CI/CD pipelines (GitHub Actions)
 
 Automated deployment pipeline triggered on pushes to main branch:
 
-- Build and push container images:
-  - Builds Next.js application container
-  - Builds Nginx container
-  - Pushes both images to AWS ECR
-- Deployment to EC2:
-  - Connects to EC2 instance via SSH
-  - Updates docker-compose.yml on the server
-  - Authenticates with ECR
-  - Pulls latest container images
-  - Cleans up old images
-  - Deploys the application
+- CI
+  - test and lint next.js application
+  - build and push docker image to ecr
+    - checkout code from repository
+    - configure aws credentials for ecr access
+    - login to aws ecr
+    - build and tag docker image for next.js app
+    - build and tag docker image for nginx
+    - push both docker images to ecr
+- CD
+  - deploy latest docker images on ec2 instance
+    - ssh into ec2
+    - pull latest container images from ecr
+    - remove existing `docker-compose.yml` file on ec2
+    - copy new `docker-compose.yml` to ec2 instance
+    - stop and remove running application with `docker-compose down`
+    - clean up old images with `docker image prune -f`
+    - restart application with `docker-compose up -d`
 
 ## kanban
 
@@ -255,24 +262,3 @@ Automated deployment pipeline triggered on pushes to main branch:
       - yes
 - how should i add my .env to aws secrets manager? terraform variables in `terraform.tfvars` that are initialized in `main.tf`
 - how do i create a domain for my website? register desired domain with aws route 53
-
-## pseudocode for CI/CD pipelines
-
-- CI
-  - test and lint next.js application
-  - build and push docker image to ecr
-    - checkout code from repository
-    - configure aws credentials for ecr access
-    - login to aws ecr
-    - build and tag docker image for next.js app
-    - build and tag docker image for nginx
-    - push both docker images to ecr
-- CD
-  - deploy latest docker images on ec2 instance
-    - ssh into ec2
-    - pull latest container images from ecr
-    - remove existing `docker-compose.yml` file on ec2
-    - copy new `docker-compose.yml` to ec2 instance
-    - stop and remove running application with `docker-compose down`
-    - clean up unused docker images with `docker image prune -f`
-    - restart application with `docker-compose up -d`
