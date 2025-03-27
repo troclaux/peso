@@ -44,7 +44,7 @@
 - Dockerfile for Next.js
 - Dockerfile for Nginx
 
-### pseudocode for CI/CD pipelines (GitHub Actions)
+### Pseudocode for CI/CD pipelines (GitHub Actions)
 
 Automated deployment pipeline triggered on pushes to main branch:
 
@@ -74,7 +74,7 @@ Automated deployment pipeline triggered on pushes to main branch:
 ### done
 
 - [x] choose auth provider
-- [x] install and setup auth.js [auth.js](https://github.com/troclaux/notes/blob/main/auth.md)
+- [x] install and setup [auth.js](https://github.com/troclaux/notes/blob/main/auth.md)
   - [x] setup Google OAuth provider
   - [x] setup GitHub OAuth provider
 - [x] define database schema
