@@ -193,10 +193,14 @@ Automated deployment pipeline triggered on pushes to main branch:
 - what is the directory structure for components?
   - everything is explained in [next.js docs](https://nextjs.org/docs)
   - [my explanation](https://github.com/troclaux/notes/blob/main/next.md#directory-structure)
-- how do i setup terraform for aws?
-  - how do i add my credentials?
-    - generate aws access keys, source them in `.env` or store them in aws secrets manager
+- how do i setup [terraform](https://github.com/troclaux/notes/blob/main/terraform.md#setup-steps) for aws?
+  - how do i store credentials/secrets safely?
+    - store env vars in aws secrets manager
+  - export aws credentials: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`
   - run `terraform init` in project's root directory
+  - implement main.tf with desired aws resources
+  - `terraform plan -var-file="terraform.tfvars" -out=tfplan`
+  - `terraform apply tfplan`
 - how do i give access between rds and ec2?
   - security groups define which traffic is allowed between aws resources
   - ec2 will also need credentials (connection string) to make requests to rds
