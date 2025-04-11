@@ -22,7 +22,7 @@ export default function Home() {
               <div className="text-white text-5xl font-bold">PESO</div>
             </div>
             <h1 className="text-4xl font-bold mb-4 text-white">
-              Simple Workout Tracking
+              Workout Tracker
             </h1>
             <p className="text-xl text-white/80 max-w-md mb-8">
               Track your fitness journey with ease
