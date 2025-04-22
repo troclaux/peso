@@ -47,6 +47,7 @@ export function WorkoutForm({ workout, isEditing = false, onSuccess }: WorkoutFo
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
   const [sets, setSets] = useState('3');
   const [reps, setReps] = useState('10');
+  const [load, setLoad] = useState('0');
 
   useEffect(() => {
     async function fetchExercises() {
@@ -91,6 +92,7 @@ export function WorkoutForm({ workout, isEditing = false, onSuccess }: WorkoutFo
       description: selectedExercise.description,
       sets: parseInt(sets, 10),
       reps: parseInt(reps, 10),
+      load: parseFloat(load) || 0,
       order_number: workoutExercises.length + 1
     };
 
@@ -98,6 +100,7 @@ export function WorkoutForm({ workout, isEditing = false, onSuccess }: WorkoutFo
     setSelectedExercise(null);
     setSets('3');
     setReps('10');
+    setLoad('0');
     setShowExerciseSearch(false);
   };
 
@@ -147,7 +150,8 @@ export function WorkoutForm({ workout, isEditing = false, onSuccess }: WorkoutFo
       const exercisesData = workoutExercises.map(ex => ({
         exercise_id: ex.exercise_id,
         sets: ex.sets,
-        reps: ex.reps
+        reps: ex.reps,
+        load: ex.load || 0
       }));
 
       let url = '/api/workouts';
@@ -263,6 +267,7 @@ export function WorkoutForm({ workout, isEditing = false, onSuccess }: WorkoutFo
                     <TableHead>Exercise</TableHead>
                     <TableHead className="text-center">Sets</TableHead>
                     <TableHead className="text-center">Reps</TableHead>
+                    <TableHead className="text-center">Load (kg)</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -273,6 +278,7 @@ export function WorkoutForm({ workout, isEditing = false, onSuccess }: WorkoutFo
                       <TableCell>{ex.name}</TableCell>
                       <TableCell className="text-center">{ex.sets}</TableCell>
                       <TableCell className="text-center">{ex.reps}</TableCell>
+                      <TableCell className="text-center">{ex.load || 0}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
                           <Button
@@ -366,7 +372,7 @@ export function WorkoutForm({ workout, isEditing = false, onSuccess }: WorkoutFo
                 )}
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="sets">Sets</Label>
                   <Input
@@ -385,6 +391,17 @@ export function WorkoutForm({ workout, isEditing = false, onSuccess }: WorkoutFo
                     min="1"
                     value={reps}
                     onChange={(e) => setReps(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="load">Load (kg)</Label>
+                  <Input
+                    id="load"
+                    type="number"
+                    min="0"
+                    step="0.5"
+                    value={load}
+                    onChange={(e) => setLoad(e.target.value)}
                   />
                 </div>
               </div>

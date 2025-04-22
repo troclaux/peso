@@ -27,10 +27,17 @@ export const POST = auth(async function POST(req: Request) {
     const workout = workoutResult.rows[0];
 
     for (let i = 0; i < exercises.length; i++) {
-      const { exercise_id, sets, reps } = exercises[i];
-      await pool.query(
-        'INSERT INTO workout_exercises (workout_id, exercise_id, sets, reps, order_number) VALUES ($1, $2, $3, $4, $5)',
+      const { exercise_id, sets, reps, load } = exercises[i];
+      const workoutExerciseResult = await pool.query(
+        'INSERT INTO workout_exercises (workout_id, exercise_id, sets, reps, order_number) VALUES ($1, $2, $3, $4, $5) RETURNING id',
         [workout.id, exercise_id, sets, reps, i + 1]
+      );
+
+      const workoutExerciseId = workoutExerciseResult.rows[0].id;
+
+      await pool.query(
+        'INSERT INTO exercise_loads (exercise_id, workout_exercise_id, user_id, load, set_number) VALUES ($1, $2, $3, $4, $5)',
+        [exercise_id, workoutExerciseId, req.auth.userId, load || 0, 1]
       );
     }
 

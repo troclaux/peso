@@ -11,6 +11,7 @@ export interface WorkoutExercise {
   exercise_id: number;
   sets: number;
   reps: number;
+  load?: number;
   order_number: number;
   name?: string;
   description?: string | null;
