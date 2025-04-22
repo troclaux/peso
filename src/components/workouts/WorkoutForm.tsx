@@ -276,9 +276,46 @@ export function WorkoutForm({ workout, isEditing = false, onSuccess }: WorkoutFo
                     <TableRow key={ex.id}>
                       <TableCell className="font-medium">{index + 1}</TableCell>
                       <TableCell>{ex.name}</TableCell>
-                      <TableCell className="text-center">{ex.sets}</TableCell>
-                      <TableCell className="text-center">{ex.reps}</TableCell>
-                      <TableCell className="text-center">{ex.load || 0}</TableCell>
+                      <TableCell className="text-center">
+                        <Input
+                          type="number"
+                          min="1"
+                          value={ex.sets}
+                          onChange={(e) => {
+                            const updatedExercises = [...workoutExercises];
+                            updatedExercises[index].sets = parseInt(e.target.value, 10) || 1;
+                            setWorkoutExercises(updatedExercises);
+                          }}
+                          className="w-16 h-8 text-center mx-auto"
+                        />
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Input
+                          type="number"
+                          min="1"
+                          value={ex.reps}
+                          onChange={(e) => {
+                            const updatedExercises = [...workoutExercises];
+                            updatedExercises[index].reps = parseInt(e.target.value, 10) || 1;
+                            setWorkoutExercises(updatedExercises);
+                          }}
+                          className="w-16 h-8 text-center mx-auto"
+                        />
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Input
+                          type="number"
+                          min="0"
+                          step="0.5"
+                          value={ex.load || 0}
+                          onChange={(e) => {
+                            const updatedExercises = [...workoutExercises];
+                            updatedExercises[index].load = parseFloat(e.target.value) || 0;
+                            setWorkoutExercises(updatedExercises);
+                          }}
+                          className="w-20 h-8 text-center mx-auto"
+                        />
+                      </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
                           <Button
