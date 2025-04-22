@@ -118,6 +118,7 @@ const WorkoutDetailPage = ({ params }: WorkoutDetailPageProps) => {
                     <TableHead>Exercise</TableHead>
                     <TableHead className="text-center">Sets</TableHead>
                     <TableHead className="text-center">Reps</TableHead>
+                    <TableHead className="text-center">Load (kg)</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -134,6 +135,7 @@ const WorkoutDetailPage = ({ params }: WorkoutDetailPageProps) => {
                       </TableCell>
                       <TableCell className="text-center">{exercise.sets}</TableCell>
                       <TableCell className="text-center">{exercise.reps}</TableCell>
+                      <TableCell className="text-center">{exercise.load ?? '-'}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
