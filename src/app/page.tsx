@@ -99,7 +99,7 @@ export default function Home() {
                 </Button>
               ) : (
                 <Button asChild>
-                  <Link href="/auth/signin">Sign In</Link>
+                  <Link href="/api/auth/signin">Sign In</Link>
                 </Button>
               )}
             </CardFooter>
