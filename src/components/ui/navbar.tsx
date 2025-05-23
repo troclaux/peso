@@ -19,8 +19,8 @@ function NavLink({ href, children, className }: NavLinkProps) {
       href={href}
       className={cn(
         buttonVariants({ variant: "outline", size: "sm" }),
-        isActive 
-          ? "bg-white text-black font-semibold border-2 border-white" 
+        isActive
+          ? "bg-white text-black font-semibold border-2 border-white"
           : "bg-white/80 text-black font-medium hover:bg-white hover:text-black border border-white",
         className
       )}
@@ -44,6 +44,18 @@ export function Navbar({ session }: NavbarProps) {
             className="font-bold text-white text-xl px-3 py-2 rounded-md bg-black border-2 border-transparent hover:bg-white hover:text-black hover:border-black transition-all duration-300 ml-2"
           >
             Peso
+          </Link>
+          <Link
+            href="https://github.com/troclaux/peso"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ml-2"
+          >
+            <img
+              src="/github_logo.png"
+              alt="GitHub"
+              className="w-6 h-6"
+            />
           </Link>
         </div>
         <nav className="flex items-center space-x-2 overflow-x-auto px-2">
