@@ -52,7 +52,7 @@ export function Navbar({ session }: NavbarProps) {
             className="ml-2"
           >
             <img
-              src="/github_logo.png"
+              src="/github_mark.svg"
               alt="GitHub"
               className="w-6 h-6"
             />
