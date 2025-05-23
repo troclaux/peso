@@ -49,13 +49,14 @@ export function Navbar({ session }: NavbarProps) {
             href="https://github.com/troclaux/peso"
             target="_blank"
             rel="noopener noreferrer"
-            className="ml-2"
+            className="ml-2 flex items-center gap-2"
           >
             <img
               src="/github_mark.svg"
               alt="GitHub"
               className="w-6 h-6"
             />
+            <span className="text-sm font-medium">Source Code</span>
           </Link>
         </div>
         <nav className="flex items-center space-x-2 overflow-x-auto px-2">
