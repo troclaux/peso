@@ -3,7 +3,7 @@
 [![CI Status (main)](https://github.com/troclaux/peso/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/troclaux/peso/actions/workflows/ci.yml)
 [![CD Status (main)](https://github.com/troclaux/peso/actions/workflows/cd.yml/badge.svg?branch=main)](https://github.com/troclaux/peso/actions/workflows/cd.yml)
 
-> Full Stack web app that stores workout routines for users, applying DevOps tools for deployment and infrastructure management
+> Full-stack web app that stores workout routines for users, applying DevOps tools for deployment and infrastructure management
 
 [pesodevops.com](https://pesodevops.com)
 
@@ -138,7 +138,7 @@ Automated deployment pipeline triggered on pushes to main branch:
   - [x] apply schema in rds with goose using .env vars (easier to use credentials safely)
   - [x] run database migrations with [Goose](https://github.com/troclaux/notes/blob/main/web_development.md#database-migration-with-goose-and-api-integration-with-sqlc)
 - [x] implement `nginx.conf` with the following requirements:
-  - reverse proxy for next.js full stack dynamic web app that connects to an rds postgresql database
+  - reverse proxy for next.js full-stack dynamic web app that connects to an rds postgresql database
   - update domain's DNS record to point to ip address where app is hosted (ec2's docker container)
 - [x] pass env vars to aws parameter store or secrets manager in terraform file (without hardcoding them)
 - [x] implement Dockerfile to run the application and [nginx](https://github.com/troclaux/notes/blob/main/nginx.md)

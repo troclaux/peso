@@ -25,7 +25,7 @@ export default function Home() {
               Workout Tracker
             </h1>
             <p className="text-xl text-white/80 max-w-md mb-8">
-              Full Stack DevOps project developed by Arthur Moreira de Albuquerque
+              Full-stack DevOps project developed by Arthur Moreira de Albuquerque
             </p>
             <div className="flex gap-4">
               {session ? (
