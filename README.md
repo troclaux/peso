@@ -263,6 +263,6 @@ Automated deployment pipeline triggered on pushes to main branch:
   - `aws ecr get-login-password --region sa-east-1 | docker login --username AWS --password-stdin [AWS_ACCOUNT_ID].dkr.ecr.sa-east-1.amazonaws.com`
     - how long does this authentication last? 12 hours
     - does it work inside ec2 instance? how?
-      - yes
+      - yes, because i attached an iam role to the ec2 instance with permissions allowing to pull from ecr
 - how should i add my .env to aws secrets manager? terraform variables in `terraform.tfvars` that are initialized in `main.tf`
 - how do i create a domain for my website? register desired domain with aws route 53
