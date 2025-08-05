@@ -26,6 +26,7 @@
   - RDS
   - VPC
   - ECR
+  - Route 53
 
 ## DevOps
 
