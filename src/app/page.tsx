@@ -25,7 +25,7 @@ export default function Home() {
               Workout Tracker
             </h1>
             <p className="text-xl text-white/80 max-w-md mb-8">
-              Hi Rafael, let's go BOTAFOGO!
+              Hi Rafael, go BOTAFOGO!
             </p>
             <div className="flex gap-4">
               {session ? (
